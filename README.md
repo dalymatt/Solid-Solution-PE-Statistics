@@ -46,7 +46,7 @@ c.	Enter the name of your EAM potential file under the fname variable as a strin
 4.	To check if the EAM file is being read correctly, open the Potential.py file and remove the ‘#’ in the print statements in the EAM parsing function of the file. Then, run the Example_input_file.py script. The script will return values for chem, Nrho, drho, Nr, and dr. In a setfl file, the fourth line contains information about the number of elements in the system (chem) and the fifth line contains information about the number of atomic density values (Nrho), the spacing in density (drho), the number of distance values (Nr), and the spacing in distance (dr). Compare the returned values with those in the EAM file. Additionally, the script will print a value for cols, which represents the number of data columns in the EAM file. Ensure that this value matches the number of columns present in the EAM file. If any of these values are parsed incorrectly, the file type is likely not in the setfl format. 
 
 Cohesive energy statistics examples:
-To test the code, utilize the aforementioned instructions using the provided NiCo and FeNiCr systems. For Ni0.40Co0.60, a lattice parameter of 3.512Å, a cut-off distance of 6.5Å, an FCC structure, a composition of 40% Ni and 60% Co, and the file name will generate the following statistics in eV/atom units:
+To test the code, utilize the aforementioned instructions using the provided NiCo and FeNiCr systems. For Ni<sub>0.40</sub)Co<sub>0.60</sub>, a lattice parameter of 3.512Å, a cut-off distance of 6.5Å, an FCC structure, a composition of 40% Ni and 60% Co, and the file name will generate the following statistics in eV/atom units:
 
 
 ![](Images/stats.png)
@@ -85,4 +85,3 @@ Additional Information:
 - Recommended Python IDEs:
   - Pycharm Professional, Community, and Education Editions (https://www.jetbrains.com/pycharm/)
   - Spyder IDE (https://www.spyder-ide.org/)
-x<sub>2</sub>
