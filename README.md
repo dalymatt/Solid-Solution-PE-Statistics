@@ -6,7 +6,7 @@ Hello! This program calculates the statistics of the cohesive energies and plana
 These codes were built using Python 3.8.3 and the NumPy Python Package. More information on Python and NumPy can be found in the Extra Information section.
 
 How to Cite:
-This program leverages the statistical equations described in Jagatramka et al. [Insert Ref here] to generate statistics for the energy landscapes. Please cite this paper when using this code. This code is free to redistribute under the GPL-3.0 license. 
+This program leverages the statistical equations described in Jagatramka et al. ***[Insert Ref here]*** to generate statistics for the energy landscapes. Please cite this paper when using this code. This code is free to redistribute under the GPL-3.0 license. 
 
 Authors:
 - Ritesh Jagatramka, University of Illinois at Chicago
@@ -53,7 +53,7 @@ To test the code, utilize the aforementioned instructions using the provided NiC
  
 Similarly, for Fe<sub>0.33</sub>Ni<sub>0.33</sub>Cr<sub>0.34</sub>, a lattice parameter of 3.5225Å, a cut-off distance of 5.6Å, an fcc structure, a composition of 33% Fe, 33% Ni, and 34% Cr, and the file name will generate the following statistics in eV/atom units:
 
-![](Images/stats2.png)
+![](Images/stats.png)
  
 These examples are provided as practice and it is encouraged to replicate the above results before inputting your system of choice.
 
@@ -62,7 +62,7 @@ To calculate the interplanar fault energy statistics for your system of choice, 
 1.	Follow all the steps for the cohesive energy calculations and then proceed to step 2 below.
 2.	To generate the faulted state coordination relations for your material update the chosen lattice parameter, lattice type, and cut-off distance, in the function shown below:
 Here, in rc.rdf_coord_fault(ao, rcut, cn, ii), ao, rcut, and cn are lattice parameters, cutoff radius, and coordination relation for the fcc system, respectively; lastly, ii is fault type. For example, if NiCo material has an fcc orientation and has an intrinsic stacking fault (ISF) then, the variable will be written as rc.rdf_coord_fault, as seen below:
-3.	The next step is to update the coordination relations for fault obtained in step 2 to calculate the energy statistics associated with your system of system. In the following input command, there are three additional variables, when compared with cohesive energy calculations. They are the faulted coordination relations (written as globals()[‘cn_’+ii]), the fcc energy (written as form_E) statistics, and the separate solute-level average per atom cohesive energy of each element in the system for instance Ni and Co in a NiCo solid solution ensemble (written as E_element, see [xxx add ref] for further details) 
+3.	The next step is to update the coordination relations for fault obtained in step 2 to calculate the energy statistics associated with your system of system. In the following input command, there are three additional variables, when compared with cohesive energy calculations. They are the faulted coordination relations (written as globals()[‘cn_’+ii]), the fcc energy (written as form_E) statistics, and the separate solute-level average per atom cohesive energy of each element in the system for instance Ni and Co in a NiCo solid solution ensemble (written as E_element, see ***[xxx add ref]*** for further details) 
 
 ![](Images/Pot_pot.png)
 
@@ -73,7 +73,7 @@ To test the code, utilize the aforementioned instructions using the provided NiC
 
 ![](Images/IFE_Ni.png)
 
-Similarly, for Fe0.33Ni0.33Cr0.34, a lattice parameter of 3.5225Å, a cut-off distance of 5.6Å, an fcc structure, a composition of 33%Fe, 33%Ni, and 34%Cr, and the fault file name (for eg. ISF, etc.) will generate the following statistics in eV/atom units:
+Similarly, for Fe<sub>0.33</sub>Ni<sub>0.33</sub>Cr<sub>0.34</sub>, a lattice parameter of 3.5225Å, a cut-off distance of 5.6Å, an fcc structure, a composition of 33%Fe, 33%Ni, and 34%Cr, and the fault file name (for eg. ISF, etc.) will generate the following statistics in eV/atom units:
 These examples are provided as practice and it is encouraged to replicate the above results before inputting your system of choice.
 
 ![](Images/IFE_Fe.png) 
