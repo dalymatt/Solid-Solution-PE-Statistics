@@ -34,6 +34,8 @@ b.	To generate the coordination relations for your material based on the chosen 
  
 Similarly, for hcp and bcc respectively,
  
+![](Images/RDF_coor_hcp.png)
+![](Images/RDF_coor_bcc.png)
  
 c.	Enter the name of your EAM potential file under the fname variable as a string (in between quotations). For example, A NiCo system whose EAM-file is named NiCo-lamps-2014.alloy will be inputted as follows:
  
