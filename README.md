@@ -29,6 +29,8 @@ a.	Enter your desired value for lattice parameter in Angstroms, cut-off distance
 Note: The composition of your alloy should be written as a mole fraction that adds to 1. The dimensionality of the comp array defines the number of system components. 
 
 b.	To generate the coordination relations for your material based on the chosen lattice parameter, lattice type, and cut-off distance, in the rc.rdf_coord_###(ao,rcut) variable, write hcp, bcc, or fcc where there is ### such that it matches your system of choice. For example, if the material has an fcc crystal structure, the variable will be written as rc.rdf_coord_fcc, as seen below:
+
+![](Images/RDF_coor_fcc.png)
  
 Similarly, for hcp and bcc respectively,
  
