@@ -38,14 +38,22 @@ Similarly, for hcp and bcc respectively,
 ![](Images/RDF_coor_bcc.png)
  
 c.	Enter the name of your EAM potential file under the fname variable as a string (in between quotations). For example, A NiCo system whose EAM-file is named NiCo-lamps-2014.alloy will be inputted as follows:
+
+![](Images/Fname.png)
+
  
 3.	After providing each variable with the required input, run the Example_input_file.py file using your terminal of choice. The code will generate Cohesive energy values as a data table if the correct parameters and EAM-file are inputted. Otherwise, errors will occur.
 4.	To check if the EAM file is being read correctly, open the Potential.py file and remove the ‘#’ in the print statements in the EAM parsing function of the file. Then, run the Example_input_file.py script. The script will return values for chem, Nrho, drho, Nr, and dr. In a setfl file, the fourth line contains information about the number of elements in the system (chem) and the fifth line contains information about the number of atomic density values (Nrho), the spacing in density (drho), the number of distance values (Nr), and the spacing in distance (dr). Compare the returned values with those in the EAM file. Additionally, the script will print a value for cols, which represents the number of data columns in the EAM file. Ensure that this value matches the number of columns present in the EAM file. If any of these values are parsed incorrectly, the file type is likely not in the setfl format. 
 
 Cohesive energy statistics examples:
 To test the code, utilize the aforementioned instructions using the provided NiCo and FeNiCr systems. For Ni0.40Co0.60, a lattice parameter of 3.512Å, a cut-off distance of 6.5Å, an FCC structure, a composition of 40% Ni and 60% Co, and the file name will generate the following statistics in eV/atom units:
+
+
+![](Images/stats.png)
  
 Similarly, for Fe0.33Ni0.33Cr0.34, a lattice parameter of 3.5225Å, a cut-off distance of 5.6Å, an fcc structure, a composition of 33% Fe, 33% Ni, and 34% Cr, and the file name will generate the following statistics in eV/atom units:
+
+![](Images/stats.png)
  
 These examples are provided as practice and it is encouraged to replicate the above results before inputting your system of choice.
 
@@ -55,6 +63,9 @@ To calculate the interplanar fault energy statistics for your system of choice, 
 2.	To generate the faulted state coordination relations for your material update the chosen lattice parameter, lattice type, and cut-off distance, in the function shown below:
 Here, in rc.rdf_coord_fault(ao, rcut, cn, ii), ao, rcut, and cn are lattice parameters, cutoff radius, and coordination relation for the fcc system, respectively; lastly, ii is fault type. For example, if NiCo material has an fcc orientation and has an intrinsic stacking fault (ISF) then, the variable will be written as rc.rdf_coord_fault, as seen below:
 3.	The next step is to update the coordination relations for fault obtained in step 2 to calculate the energy statistics associated with your system of system. In the following input command, there are three additional variables, when compared with cohesive energy calculations. They are the faulted coordination relations (written as globals()[‘cn_’+ii]), the fcc energy (written as form_E) statistics, and the separate solute-level average per atom cohesive energy of each element in the system for instance Ni and Co in a NiCo solid solution ensemble (written as E_element, see [xxx add ref] for further details) 
+
+![](Images/Pot_pot.png)
+
 4.	The final step is to run the code!!!
 
 Interplanar fault energy statistics examples:
