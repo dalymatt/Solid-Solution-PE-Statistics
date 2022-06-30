@@ -51,7 +51,7 @@ To test the code, utilize the aforementioned instructions using the provided NiC
 
 ![](Images/stats.png)
  
-Similarly, for Fe0.33Ni0.33Cr0.34, a lattice parameter of 3.5225Å, a cut-off distance of 5.6Å, an fcc structure, a composition of 33% Fe, 33% Ni, and 34% Cr, and the file name will generate the following statistics in eV/atom units:
+Similarly, for Fe<sub>0.33</sub>Ni<sub>0.33</sub>Cr<sub>0.34</sub>, a lattice parameter of 3.5225Å, a cut-off distance of 5.6Å, an fcc structure, a composition of 33% Fe, 33% Ni, and 34% Cr, and the file name will generate the following statistics in eV/atom units:
 
 ![](Images/stats.png)
  
@@ -69,7 +69,7 @@ Here, in rc.rdf_coord_fault(ao, rcut, cn, ii), ao, rcut, and cn are lattice para
 4.	The final step is to run the code!!!
 
 Interplanar fault energy statistics examples:
-To test the code, utilize the aforementioned instructions using the provided NiCo and FeNiCr systems. For Ni0.40Co0.60, a lattice parameter of 3.512Å, a cut-off distance of 6.5Å, an fcc structure, a composition of 40%Ni and 60%Co, and the file name for the fault (for eg. ISF, etc.) will generate the following statistics in eV/atom units:
+To test the code, utilize the aforementioned instructions using the provided NiCo and FeNiCr systems. For Ni<sub>0.40</sub>Co<sub>0.60</sub>, a lattice parameter of 3.512Å, a cut-off distance of 6.5Å, an fcc structure, a composition of 40%Ni and 60%Co, and the file name for the fault (for eg. ISF, etc.) will generate the following statistics in eV/atom units:
 
 ![](Images/IFE_Ni.png)
 
