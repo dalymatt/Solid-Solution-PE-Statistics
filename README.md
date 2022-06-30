@@ -79,9 +79,9 @@ These examples are provided as practice and it is encouraged to replicate the ab
 ![](Images/IFE_Fe.png) 
 
 Additional Information:
--Python Documentation and Installation Resource: 
-https://www.python.org/ 
--Documentation on NumPy Python package: https://numpy.org/doc/stable/user/index.html#user
--Recommended Python IDEs:
- -Pycharm Professional, Community, and Education Editions
- -Spyder IDE
+- Python Documentation and Installation Resource: 
+ - https://www.python.org/ 
+- Documentation on NumPy Python package: https://numpy.org/doc/stable/user/index.html#user
+- Recommended Python IDEs:
+ - Pycharm Professional, Community, and Education Editions
+ - Spyder IDE
