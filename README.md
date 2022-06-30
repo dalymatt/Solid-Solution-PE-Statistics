@@ -22,6 +22,9 @@ More information about the EAM-style can be found here:
 https://docs.lammps.org/pair_eam.html. 
 Ensure that your potential file is located in the same file directory/location as the codes.
 2.	Open the Example_input_file.py code file using a script editor or IDE of choice. Some IDE suggestions are listed in the additional information section. Enter the inputs as follows:
+
+![](Images/Input.png)
+
 a.	Enter your desired value for lattice parameter in Angstroms, cut-off distance in Angstroms, and the composition of your material as the mole fraction of each element. For example, for a NiCo system that is 40% Ni and 60% Co by mole with a lattice parameter of 3.512Å and a cut-off distance of 6.5Å, the inputs would appear as shown below. 
 Note: The composition of your alloy should be written as a mole fraction that adds to 1. The dimensionality of the comp array defines the number of system components. 
 
