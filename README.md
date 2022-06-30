@@ -83,5 +83,5 @@ Additional Information:
   - https://www.python.org/ 
 - Documentation on NumPy Python package: https://numpy.org/doc/stable/user/index.html#user
 - Recommended Python IDEs:
-  - Pycharm Professional, Community, and Education Editions
-  - Spyder IDE
+  - Pycharm Professional, Community, and Education Editions (https://www.jetbrains.com/pycharm/)
+  - Spyder IDE (https://www.spyder-ide.org/)
