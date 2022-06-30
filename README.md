@@ -9,10 +9,10 @@ How to Cite:
 This program leverages the statistical equations described in Jagatramka et al. [Insert Ref here] to generate statistics for the energy landscapes. Please cite this paper when using this code. This code is free to redistribute under the GPL-3.0 license. 
 
 Authors:
-•	Ritesh Jagatramka, University of Illinois at Chicago
-•	Chu Wang, University of Illinois at Chicago (now at Nissan)
-•	Ariana Sofia Del Valle, University of Illinois at Chicago  
-•	Matthew Daly, University of Illinois at Chicago 
+- Ritesh Jagatramka, University of Illinois at Chicago
+- Chu Wang, University of Illinois at Chicago (now at Nissan)
+- Ariana Sofia Del Valle, University of Illinois at Chicago  
+- Matthew Daly, University of Illinois at Chicago 
 
 How to calculate the cohesive energy statistics:
 To calculate the Cohesive energy statistics for your system of choice, please follow these directions:
@@ -79,9 +79,9 @@ These examples are provided as practice and it is encouraged to replicate the ab
 ![](Images/IFE_Fe.png) 
 
 Additional Information:
-●	Python Documentation and Installation Resource: 
+-Python Documentation and Installation Resource: 
 https://www.python.org/ 
-●	Documentation on NumPy Python package: https://numpy.org/doc/stable/user/index.html#user
-●	Recommended Python IDEs:
-Pycharm Professional, Community, and Education Editions
-Spyder IDE
+-Documentation on NumPy Python package: https://numpy.org/doc/stable/user/index.html#user
+-Recommended Python IDEs:
+ -Pycharm Professional, Community, and Education Editions
+ -Spyder IDE
