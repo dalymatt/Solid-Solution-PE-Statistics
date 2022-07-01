@@ -11,7 +11,8 @@ This program leverages the statistical equations described in Jagatramka et al. 
 Authors:
 - Ritesh Jagatramka, University of Illinois at Chicago
 - Chu Wang, University of Illinois at Chicago (now at Nissan)
-- Ariana Sofia Del Valle, University of Illinois at Chicago  
+- Ariana Sofia Del Valle, University of Illinois at Chicago
+- Amir Shirsalimian, University of Illinois at Chicago  
 - Matthew Daly, University of Illinois at Chicago 
 
 How to calculate the cohesive energy statistics:
