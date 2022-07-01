@@ -1,7 +1,7 @@
 Overview:
 Hello! This program calculates the statistics of the cohesive energies and planar fault energies of your system of choice. This program requires an embedded atom method (EAM) file, in the setfl format, that describes the interatomic interactions in your system. You must also provide the composition of your material (comp), the lattice parameter (ao), the lattice type of your material (fcc, bcc, etc.), and the desired cut-off distance (rc). This repository provides one example input file and two Python libraries named Example_input_file.py, rdf_coord.py, and Potential.py, respectively. The block diagram below describes their usage:
 
-![](Images/Flowchart.png)
+![](Images/flowchart_final.png)
 
 These codes were built using Python 3.8.3 and the NumPy Python Package. More information on Python and NumPy can be found in the Extra Information section.
 
