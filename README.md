@@ -79,8 +79,7 @@ These examples are provided as practice and it is encouraged to replicate the ab
 ![](Images/frnicrfaultedstate.PNG ) 
 
 Additional Information:
-- Python Documentation and Installation Resource: 
-  - https://www.python.org/ 
+- Python Documentation and Installation Resource: https://www.python.org/ 
 - Documentation on NumPy Python package: https://numpy.org/doc/stable/user/index.html#user
 - Recommended Python IDEs:
   - Pycharm Professional, Community, and Education Editions (https://www.jetbrains.com/pycharm/)
