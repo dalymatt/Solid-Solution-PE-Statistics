@@ -76,7 +76,7 @@ To test the code, utilize the aforementioned instructions using the provided NiC
 Similarly, for Fe<sub>0.33</sub>Ni<sub>0.33</sub>Cr<sub>0.34</sub>, a lattice parameter of 3.5225Å, a cut-off distance of 5.6Å, an fcc structure, a composition of 33%Fe, 33%Ni, and 34%Cr, and the fault file name (for eg. ISF, etc.) will generate the following statistics in eV/atom units:
 These examples are provided as practice and it is encouraged to replicate the above results before inputting your system of choice.
 
-![](Images/fenicrfaultedstats.PNG ) 
+![](Images/IFE_Fe.PNG ) 
 
 Additional Information:
 - Python Documentation and Installation Resource: 
