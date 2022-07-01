@@ -144,10 +144,10 @@ def rdf_coord_bcc(a0,rc):
 
 def rdf_coord_fault(a0,rc,cn_FCC,name):
     # Loading the pkl files with stored coordintation details
-    import pickle5
+    import pickle
     name='cn_'+ name +'.pkl'
     with open(name, 'rb') as f:
-        jj=pickle5.load(f)
+        jj=pickle.load(f)
         
     cn_f=[]
     rdf_f=[]    
