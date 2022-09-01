@@ -6,7 +6,7 @@ Hello! This program calculates the statistics of the cohesive energies and plana
 These codes were built using Python 3.8.3 and the NumPy Python Package. More information on Python and NumPy can be found in the Extra Information section.
 
 How to Cite:
-This program leverages the statistical equations described in Jagatramka et al. ***[Insert Ref here]*** to generate statistics for the energy landscapes. Please cite this paper when using this code. This code is free to redistribute under the GPL-3.0 license. 
+This program leverages the statistical equations described in Jagatramka et al. (2022) Comp. Mater. Sci. 214 111763 doi: 10.1016/j.commatsci.2022.111763 to generate statistics for the energy landscapes. Please cite this paper when using this code. This code is free to redistribute under the GPL-3.0 license. 
 
 Authors:
 - Ritesh Jagatramka, University of Illinois at Chicago
