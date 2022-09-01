@@ -3,7 +3,7 @@ Advanced Materials and Microstructures Lab
 University of Illinois at Chicago, 2022
 https://amml.lab.uic.edu/
 
-Please cite: xxxx when using
+Please cite: Jagatramka et al. (2022), Comp. Mater. Sci. 214 111763, doi: 10.1016/j.commatsci.2022.111763
 
 """
 
