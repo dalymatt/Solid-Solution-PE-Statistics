@@ -51,7 +51,7 @@ def potential_read(fname):
     for i in np.arange(0,chem):
         m=0
         for j in np.arange(0,Nrho):
-            Fr[j,i]=float(str.split(lines[i*Nrho_rows+k+i])[m])
+            Fr[j,i]=float(str.split(lines[i*(Nr_rows-Nrho_rows)+i*Nrho_rows+k+i])[m])
             m=m+1
             if m==cols:
                 m=0
@@ -61,7 +61,7 @@ def potential_read(fname):
     for i in np.arange(0,chem):
         m=0
         for j in np.arange(0,Nr):
-            rho[j,i]=float(str.split(lines[(i+1)*Nr_rows+k+i])[m])
+            rho[j,i]=float(str.split(lines[(i+1)*Nrho_rows+k+i])[m])
             m=m+1
             if m==cols:
                 m=0
