@@ -1,12 +1,28 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  9 19:10:09 2021
+"""EAM/alloy potential reader and analytical cohesive-energy statistics.
 
-@author: Matt
+Equation references
+-------------------
+[Vacancy manuscript] A. Baski et al., "An Analytical Method for
+Quantifying Vacancy Energetics and Vacancy Transport Behavior in
+Concentrated Solid Solutions" (revised manuscript supplied with this code).
+
+[CMS 2022] R. Jagatramka, C. Wang, and M. Daly, Computational Materials
+Science 214 (2022) 111763, doi:10.1016/j.commatsci.2022.111763.
+
+The calculation follows the coordination-shell reparameterization of the
+embedded-atom method (EAM). Warren-Cowley short-range-order parameters are
+introduced through P_zeta^(XY) = C_X C_Y (1-alpha_zeta^(XY)); see vacancy
+manuscript Eqs. (5)-(12). Numerical expressions are intentionally unchanged.
 """
 
 def potential_read(fname='NiCo-lammps-2014.alloy'):
-    
+    """Read a LAMMPS EAM/alloy ``setfl`` file.
+
+    Returns distance/density grids and tabulated electron-density, embedding,
+    and pair-potential functions. Pair data are expanded to a symmetric
+    ``(Nr, n_elements, n_elements)`` array.
+    """
     import numpy as np
     with open(fname) as f:
         lines=f.readlines()
@@ -87,6 +103,11 @@ def potential_read(fname='NiCo-lammps-2014.alloy'):
     return rrange,rhorange,rho,Fr,Pp
 #%%
 def potential_fetch(rrange,rhorange,rho,Fr,Pp,atoms,Neighbors,ind):
+    """Evaluate the conventional atom-resolved EAM terms for one atom.
+
+    This is the direct site form of vacancy-manuscript Eq. (1), with the
+    local electron density defined by Eq. (2).
+    """
 #%%
     import numpy as np
     
@@ -107,6 +128,14 @@ def potential_fetch(rrange,rhorange,rho,Fr,Pp,atoms,Neighbors,ind):
     return rho_a, Fr_a, Pp_a
 #%%
 def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
+    """Return mean/std cohesive-energy statistics for one environment.
+
+    ``cn[k] = (r_k, N_k)`` defines the coordination-shell structure factor.
+    ``alpha[k,i,j]`` is the Warren-Cowley parameter for shell k and pair i-j.
+
+    Main references: vacancy-manuscript Eqs. (3)-(12); the random-alloy
+    limit is equivalent to CMS-2022 Eqs. (3)-(10).
+    """
     import numpy as np
     import pandas as pd
     
@@ -124,6 +153,8 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
             r = cn[i, 0]
             m = cn[i, 1]
             Rho = np.interp(r, rrange, rho[:, j])
+            # Mean local electron density, vacancy manuscript Eq. (3)
+            # (and the charge-density contribution underlying Eq. (1)).
             rho_bar = rho_bar + c * m * Rho
             rho_cn[i, j] = np.interp(r, rrange, rho[:, j])
 
@@ -139,6 +170,8 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
         Fs[j] = np.interp(rho_bar, rhorange, Fr[:, j])
         F_bar = F_bar + Fs[j] * c
 
+    # Standard deviation of embedding energy: vacancy manuscript Eq. (10)
+    # embedding contribution; CMS-2022 Eq. (5).
     F_std = np.sqrt(np.sum((Fs - F_bar)**2 * comp))
 
     Pp_bar = np.zeros((np.shape(comp)[0], np.shape(comp)[0]))
@@ -149,6 +182,8 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
             Pp_ind = 0
             for k in np.arange(0, np.shape(cn)[0]):
                 Pp_cn[k, i, j] = np.interp(cn[k, 0], rrange, Pp[:, i, j]) / cn[k, 0]
+                # Ordered pair probability C_i C_j (1-alpha_kij):
+                # vacancy manuscript Eqs. (5)-(7).
                 Pp_ind += comp[i]*comp[j]*cn[k,1]*Pp_cn[k,i,j]*(1-alpha[k,i,j])
             Pp_bar[i, j] = Pp_ind
 
@@ -157,12 +192,16 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
     form_E[1, 0] = np.sqrt(np.sum(rho_std**2))
     form_E[0, 1] = F_bar
     form_E[1, 1] = F_std
+    # Mean pair contribution (1/2 avoids double counting):
+    # vacancy manuscript Eq. (9); CMS-2022 Eq. (3).
     form_E[0, 2] = np.sum(Pp_bar) * 0.5
 
     Pp_std_cn = np.zeros((np.shape(cn)[0], np.shape(comp)[0]))
     Pp_std_avg = np.zeros((np.shape(cn)[0], np.shape(comp)[0]))
     for k in np.arange(0, np.shape(cn)[0]):
         for j in np.arange(0, np.shape(comp)[0]):
+            # Central-species/shell mean pair interaction. This is the SRO
+            # extension of CMS-2022 Appendix-B Eq. (B.2).
             avg = np.sum(Pp_cn[k, j, :] * comp*(1-alpha[k,j,:]))
             Pp_std_avg[k, j] = avg * cn[k, 1]
             Pp_std_cn[k, j] = np.sum((Pp_cn[k, j, :] - avg)**2 * comp*(1-alpha[k,i,j])) * cn[k, 1]
@@ -170,13 +209,21 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
     Pp_std_cn2 = np.sqrt(np.sum(Pp_std_cn, axis=0))
     Pp_std_avg2 = np.sum(Pp_std_avg, axis=0)
 
+    # Pair-interaction standard deviation: vacancy manuscript Eqs. (11)-(12);
+    # random-alloy counterpart CMS-2022 Eqs. (6)-(8).
     Pp_std = np.sqrt(np.sum(comp * (Pp_std_cn2**2 + (Pp_std_avg2 - np.sum(Pp_bar))**2)))
 
     form_E[1, 2] = Pp_std * 0.5
+    # Mean per-atom cohesive/site energy: vacancy manuscript Eq. (9);
+    # CMS-2022 Eq. (3).
     form_E[0, 3] = F_bar + np.sum(Pp_bar) * 0.5
 
+    # Covariance cov(F, V/2): vacancy manuscript Eq. (10);
+    # CMS-2022 Eq. (10).
     exp_FV = np.sum(comp * Fs * Pp_std_avg2 * 0.5) - F_bar * np.sum(Pp_bar) * 0.5
     covar2 = exp_FV
+    # Total site-energy standard deviation from variance propagation:
+    # vacancy manuscript Eq. (10); CMS-2022 Eq. (9).
     form_E[1, 3] = np.sqrt(F_std**2 + (Pp_std**2 / 4) + 2 * covar2)
 
     form_E = pd.DataFrame(form_E, columns=["rho", "F", "Pp", "E"])

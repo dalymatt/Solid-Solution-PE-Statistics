@@ -1,4 +1,10 @@
-"""
+"""EAM analytical statistics for cohesive energy and generalized planar faults.
+
+Equation references in this file are to Jagatramka, Wang, and Daly,
+Computational Materials Science 214 (2022) 111763 unless explicitly stated.
+The cohesive-energy implementation follows Eqs. (1)-(10); planar-fault means
+and fluctuations follow Eqs. (11)-(16) and Appendix C.
+
 Advanced Materials and Microstructures Lab 
 University of Illinois at Chicago, 2022
 https://amml.lab.uic.edu/
@@ -12,6 +18,7 @@ Please cite: Jagatramka et al. (2022), Comp. Mater. Sci. 214 111763, doi: 10.101
 #corresponding variables. More information about EAM style and 
 #variable names can be read here: https://docs.lammps.org/pair_eam.html
 def potential_read(fname):
+    """Read a LAMMPS EAM/alloy setfl file into interpolation arrays."""
 
     import numpy as np
 
@@ -110,6 +117,10 @@ def potential_read(fname):
 
 #Performs Energy calcualtions based on information extracted from file above.
 def potential_stats(rrange,rhorange,rho,Fr,Pp,comp,cn):
+    """Calculate random-alloy cohesive-energy mean and standard deviation.
+
+    Implements CMS-2022 Eqs. (3)-(10) and Appendix B.
+    """
 
     import numpy as np
     import pandas as pd
@@ -124,7 +135,7 @@ def potential_stats(rrange,rhorange,rho,Fr,Pp,comp,cn):
             r=cn[i,0]
             m=cn[i,1]
             Rho=np.interp(r,rrange,rho[:,j])
-            #Equation 2 in Manuscript (Average per Atom Charge Density)
+            # Coordination-shell mean electron density; contributes to Eq. (3)
             rho_bar=rho_bar+c*m*Rho                         
             rho_cn[i,j]=np.interp(r,rrange,rho[:,j])
 
@@ -144,7 +155,7 @@ def potential_stats(rrange,rhorange,rho,Fr,Pp,comp,cn):
         Fs[j]=np.interp(rho_bar,rhorange,Fr[:,j])           
         #Average per Atom Embedding Energy
         F_bar = F_bar + Fs[j]*c                             
-    #Equation 3 in Manuscript (Embeddeding Energy Standard Deviation)
+    # Embedding-energy standard deviation, Eq. (5)
     F_std=np.sqrt(np.sum(((Fs-F_bar)**2)*comp))             
 
 #Pair Interaction Energy Calculation (referred to as V in the manuscript)
@@ -194,20 +205,20 @@ def potential_stats(rrange,rhorange,rho,Fr,Pp,comp,cn):
             if i <= j:
                 continue
             bb[i,j]= comp[i]*comp[j]*np.square(Pp_std_avg2[i] - Pp_std_avg2[j])
-    #Equation 4, Standard deviation of the Pair Interaction energy
+    # Pair-interaction standard deviation, Eqs. (6)-(8)
     Pp_std = np.sqrt(np.sum(comp*(np.square(Pp_std_cn2)))+sum(sum(bb)))                                     
 
     #1/2 Standard Deviation of Pair Interaction Energy 
     #(1/2 is to avoid double counting of interaction energies)
     form_E[1,2]=Pp_std*0.5                                                  
 
-    #Equation 1 in Manuscript (Average per atom binding energy)    
+    # Average per-atom cohesive/site energy, Eq. (3)    
     form_E[0,3]=F_bar+ sum(sum(Pp_bar))*0.5                                 
 
-    #Equation 6 in Manuscript (cov(F, 1/2V))
+    # Covariance cov(F, V/2), Eq. (10)
     covar = np.sum(comp*Fs*Pp_std_avg2*0.5) - F_bar*sum(sum(Pp_bar))*0.5   
 
-    #Equation 5 in Manuscript (Standard Deviation of the per atom energy)
+    # Total per-atom energy standard deviation, Eq. (9)
     form_E[1,3] = np.sqrt(F_std**2 + (Pp_std/2)**2 + 2*covar)              
     form_E=pd.DataFrame(form_E, columns=["rho","F","Pp","E"])
     form_E.index=["Mean", "Std"]
@@ -221,6 +232,12 @@ def potential_stats(rrange,rhorange,rho,Fr,Pp,comp,cn):
 #%%
 #Performs Fault Energy calcualtions based on information extracted from file above.
 def potential_stats_fault(rrange,rhorange,rho,Fr,Pp,comp,cn,cn_fault,form_E_fcc,E_element_fcc,ii):
+    """Calculate one planar-fault energy distribution.
+
+    The fault excess energy per unit area follows CMS-2022 Eq. (11). Its
+    standard deviation and covariance corrections follow Eqs. (12)-(16)
+    and Appendix C. ``ii`` selects the faulted-layer environment.
+    """
     import numpy as np
     import pandas as pd
     form_E_fault=[]
@@ -238,7 +255,7 @@ def potential_stats_fault(rrange,rhorange,rho,Fr,Pp,comp,cn,cn_fault,form_E_fcc,
                 r=cn_fault[i1][i,0]
                 m=cn_fault[i1][i,1]
                 Rho=np.interp(r,rrange,rho[:,j])
-                #Equation 2 in Manuscript (Average per Atom Charge Density)
+                # Coordination-shell mean electron density; contributes to Eq. (3)
                 rho_bar=rho_bar+c*m*Rho                         
                 rho_cn[i,j]=np.interp(r,rrange,rho[:,j])
     
@@ -258,7 +275,7 @@ def potential_stats_fault(rrange,rhorange,rho,Fr,Pp,comp,cn,cn_fault,form_E_fcc,
             Fs[j]=np.interp(rho_bar,rhorange,Fr[:,j])           
             #Average per Atom Embedding Energy
             F_bar = F_bar + Fs[j]*c                             
-        #Equation 3 in Manuscript (Embeddeding Energy Standard Deviation)
+        # Embedding-energy standard deviation, Eq. (5)
         F_std=np.sqrt(np.sum(((Fs-F_bar)**2)*comp))             
     
     #Pair Interaction Energy Calculation (referred to as V in the manuscript)
@@ -308,20 +325,20 @@ def potential_stats_fault(rrange,rhorange,rho,Fr,Pp,comp,cn,cn_fault,form_E_fcc,
                 if i <= j:
                     continue
                 bb[i,j]= comp[i]*comp[j]*np.square(Pp_std_avg2[i] - Pp_std_avg2[j])
-        #Equation 4, Standard deviation of the Pair Interaction energy
+        # Pair-interaction standard deviation, Eqs. (6)-(8)
         Pp_std = np.sqrt(np.sum(comp*(np.square(Pp_std_cn2)))+sum(sum(bb)))                                     
     
         #1/2 Standard Deviation of Pair Interaction Energy 
         #(1/2 is to avoid double counting of interaction energies)
         form_E[1,2]=Pp_std*0.5                                                  
     
-        #Equation 1 in Manuscript (Average per atom binding energy)    
+        # Average per-atom cohesive/site energy, Eq. (3)    
         form_E[0,3]=F_bar+ sum(sum(Pp_bar))*0.5                                 
     
-        #Equation 6 in Manuscript (cov(F, 1/2V))
+        # Covariance cov(F, V/2), Eq. (10)
         covar = np.sum(comp*Fs*Pp_std_avg2*0.5) - F_bar*sum(sum(Pp_bar))*0.5   
     
-        #Equation 5 in Manuscript (Standard Deviation of the per atom energy)
+        # Total per-atom energy standard deviation, Eq. (9)
         form_E[1,3] = np.sqrt(F_std**2 + (Pp_std/2)**2 + 2*covar)   
         form_E=pd.DataFrame(form_E, columns=["rho","F","Pp","E"])
         form_E.index=["Mean", "Std"]           

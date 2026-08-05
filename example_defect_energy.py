@@ -1,21 +1,35 @@
 # -*- coding: utf-8 -*-
 """
-Direct-execution example for:
+Example input script for the analytical calculation of cohesive-energy,
+vacancy-formation-energy (VFE), vacancy-migration-energy (VME), and
+generalized planar-fault-energy (GPFE) statistics in concentrated
+face-centered-cubic (FCC) solid solutions.
 
-1. FCC cohesive energy
-2. Vacancy formation energy (VFE)
-3. Vacancy migration energy (VME)
-4. Generalized planar fault energies (GPFEs)
+This file is intended to be executed directly. It contains only the
+material-specific inputs. The reusable analytical equations and numerical
+procedures are implemented in:
 
-Current implementation
-----------------------
-Random system:
-    FCC + VFE + VME + GPFE
+    src/energy_workflow.py
+    src/defect_energy_functions.py
+    src/Potential.py
+    src/Potential_GPFE.py
 
-SRO system:
-    FCC + VFE + VME
+Analytical basis
+----------------
+1. R. Jagatramka, C. Wang, and M. Daly,
+   "An analytical method to quantify the statistics of energy landscapes
+   in random solid solutions,"
+   Computational Materials Science 214 (2022) 111763.
+   https://doi.org/10.1016/j.commatsci.2022.111763
 
-GPFE is automatically skipped when USE_ALPHA = True.
+2. A. Baski, R. Jagatramka, A. Shirsalimian, and M. Daly,
+   "An Analytical Method for Quantifying Vacancy Energetics and Vacancy
+   Transport Behavior in Concentrated Solid Solutions."
+
+The workflow evaluates statistical energy landscapes using an EAM/alloy
+potential, FCC coordination structure factors, alloy composition, and,
+when requested, Warren-Cowley short-range-order parameters.
+
 """
 
 from pathlib import Path
@@ -23,278 +37,284 @@ import sys
 
 import numpy as np
 
-# Repository paths: users can run this file directly from any working directory.
+
+# =============================================================================
+# REPOSITORY PATHS
+# =============================================================================
+
+# ROOT is the directory containing this example script.
+#
+# Expected repository organization:
+#
+# repository_root/
+# |-- example_defect_energy.py
+# |-- src/
+# |   |-- energy_workflow.py
+# |   |-- defect_energy_functions.py
+# |   |-- Potential.py
+# |   `-- Potential_GPFE.py
+# |-- potentials/
+# |-- data/
+# `-- ...
 ROOT = Path(__file__).resolve().parent
+
+# Directory containing the reusable calculation modules.
 SRC_DIR = ROOT / "src"
+
+# Add src/ to Python's module-search path so that energy_workflow.py can be
+# imported when this script is executed directly from the repository root.
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from defect_gpfe_functions import (
-    calculate_random_gpfe,
-    print_gpfe_summary,
-    print_summary,
-    run_vfe_vme_calculation,
+# Main public workflow function. It coordinates the cohesive-energy,
+# VFE/VME, and GPFE calculations using the inputs defined below.
+from energy_workflow import run_energy_calculations
+
+
+# =============================================================================
+# MATERIAL-SPECIFIC INPUTS
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# EAM/ALLOY POTENTIAL FILE
+# -----------------------------------------------------------------------------
+#
+# Select the setfl-style EAM/alloy potential that describes the alloy system.
+#
+# IMPORTANT:
+# The element order stored in the potential file determines the required order
+# of the entries in COMPOSITION.
+#
+# Active example:
+#     Fe-Ni-Cr EAM/alloy potential
+POTENTIAL_FILE = ROOT / "potentials" / "FeNiCr.eam.alloy"
+
+# Alternative example for an equimolar Fe-Ni-Cr-Co-Cu alloy:
+# POTENTIAL_FILE = ROOT / "potentials" / "FeNiCrCoCu-with-ZBL.eam.alloy" 
+
+
+# -----------------------------------------------------------------------------
+# FCC LATTICE PARAMETER
+# -----------------------------------------------------------------------------
+#
+# Equilibrium or prescribed FCC lattice parameter in angstroms.
+#
+# The normalized coordination structure factors are multiplied by this value
+# to recover physical interatomic distances before the EAM functions are
+# interpolated.
+#
+# Use a lattice parameter consistent with:
+#     1. the selected alloy composition,
+#     2. the selected random/SRO state, and
+#     3. the selected EAM potential.
+LATTICE_PARAMETER = 3.5225        # Fe0.33Ni0.33Cr0.34, random alloy
+
+# Additional examples:
+# LATTICE_PARAMETER = 3.51036     # Fe0.73Ni0.08Cr0.19, random alloy
+# LATTICE_PARAMETER = 3.50931     # Fe0.73Ni0.08Cr0.19, alpha_ij = +0.05
+# LATTICE_PARAMETER = 3.51500     # Fe0.73Ni0.08Cr0.19, alpha_ij = -0.05
+
+# LATTICE_PARAMETER = 3.53073      # Equimolar NiCrCo
+# LATTICE_PARAMETER = 3.546        # Equimolar NiCrCoCu
+# LATTICE_PARAMETER = 3.54939      # Equimolar FeNiCrCoCu
+
+
+# -----------------------------------------------------------------------------
+# NEIGHBOR CUTOFF RADIUS
+# -----------------------------------------------------------------------------
+#
+# Radial cutoff in angstroms used to construct the FCC radial-distribution and
+# coordination-shell relations.
+#
+# The cutoff must be consistent with the selected potential and with the
+# coordination data used by the analytical defect-energy calculations.
+CUTOFF_RADIUS = 5.6               # FeNiCr potential
+
+# Alternative example:
+# CUTOFF_RADIUS = 5.80375         # FeNiCrCoCu potential
+
+
+# -----------------------------------------------------------------------------
+# ALLOY COMPOSITION
+# -----------------------------------------------------------------------------
+#
+# Atomic fractions of the alloy components.
+#
+# Requirements:
+#     1. COMPOSITION must be one-dimensional.
+#     2. Every value must be non-negative.
+#     3. The entries must sum to 1.0.
+#     4. The element order must match the order in POTENTIAL_FILE.
+#
+# For the FeNiCr potential, the expected order is:
+#
+#     [Fe, Ni, Cr]
+#
+# Thus, the active input corresponds to:
+#
+#     Fe0.33 Ni0.33 Cr0.34
+COMPOSITION = np.array([0.33, 0.33, 0.34], dtype=float)
+
+# Additional examples:
+# COMPOSITION = np.array([0.73, 0.08, 0.19], dtype=float)
+#
+# For a five-component potential whose element order is
+# [Fe, Ni, Cr, Co, Cu]:
+# COMPOSITION = np.array([0.2, 0.2, 0.2, 0.2, 0.2], dtype=float)
+# COMPOSITION = np.array([0.0, 0.333, 0.333, 0.334, 0.0], dtype=float)
+# COMPOSITION = np.array([0.0, 0.25, 0.25, 0.25, 0.25], dtype=float)
+
+
+# -----------------------------------------------------------------------------
+# CHEMICAL-ARRANGEMENT MODE
+# -----------------------------------------------------------------------------
+#
+# Select exactly one of the following:
+#
+#     MODE = "Random"
+#         All Warren-Cowley parameters are set to zero:
+#
+#             alpha_ij^(zeta) = 0
+#
+#         This represents statistically random occupation of the lattice.
+#
+#     MODE = "SRO"
+#         Warren-Cowley parameters are loaded from ALPHA_FILE and used to
+#         modify the conditional neighbor probabilities in each coordination
+#         shell.
+#
+# The Warren-Cowley parameter follows the convention
+#
+#     alpha_ij^(zeta) = 1 - P_ij^(zeta) / c_j,
+#
+# where P_ij^(zeta) is the conditional probability of finding species j
+# around species i in shell zeta, and c_j is the global concentration of j.
+MODE = "Random"
+# MODE = "SRO"
+
+
+# -----------------------------------------------------------------------------
+# WARREN-COWLEY SRO PARAMETER FILE
+# -----------------------------------------------------------------------------
+#
+# NumPy .npy file containing the Warren-Cowley parameter array.
+#
+# Expected array shape:
+#
+#     (number_of_coordination_shells,
+#      number_of_elements,
+#      number_of_elements)
+#
+# This file is used only when MODE = "SRO". It may remain defined while
+# MODE = "Random"; in that case, the workflow ignores it and uses alpha = 0.
+ALPHA_FILE = (ROOT / "data" / "sro" / "alpha_FeNiCr_SS_point05.npy")
+
+
+# =============================================================================
+# RUN ANALYTICAL CALCULATIONS
+# =============================================================================
+#
+# run_energy_calculations() coordinates the following operations:
+#
+# 1. Validate the potential path, composition, and random/SRO selection.
+#
+# 2. Generate the perfect-FCC coordination relations.
+#
+# 3. Read the EAM/alloy functions:
+#       - elemental electron-density functions,
+#       - embedding-energy functions, and
+#       - pair-interaction functions.
+#
+# 4. Calculate FCC cohesive-energy statistics using the reparameterized EAM
+#    framework. The underlying energy decomposition corresponds to the
+#    embedding and pair contributions described in the analytical papers.
+#
+# 5. Calculate vacancy-formation-energy statistics from the excess energy of
+#    vacancy-containing coordination environments relative to perfect FCC.
+#
+# 6. Calculate transition-state excess-energy statistics and obtain the
+#    vacancy migration-energy distribution from the difference between the
+#    transition-state and vacancy-state energy landscapes.
+#
+# 7. Calculate GPFE statistics for the enabled planar-fault configurations.
+#
+# The returned object is a dictionary containing both detailed tables and
+# scalar summary quantities.
+results = run_energy_calculations(
+    root=ROOT,
+    potential_file=POTENTIAL_FILE,
+    lattice_parameter=LATTICE_PARAMETER,
+    cutoff_radius=CUTOFF_RADIUS,
+    composition=COMPOSITION,
+    mode=MODE,
+    alpha_file=ALPHA_FILE,
 )
 
 
-# =========================================================
-# SYSTEM INPUTS
-# =========================================================
-
-# EAM/alloy potential file
-POTENTIAL_FILE = ROOT / "potentials" / "FeNiCr.eam.alloy"
-#POTENTIAL_FILE = ROOT / "potentials" / "FeNiCrCoCu-with-ZBL.eam.alloy"
-
-# Lattice parameter in angstrom
-LATTICE_PARAMETER = 3.51036        # Fe73Ni8Cr19 random
-# LATTICE_PARAMETER = 3.54939      # Equimolar FeNiCrCoCu
-# LATTICE_PARAMETER = 3.4986       # Pure Fe in Fe-Ni-Cr potential
-# LATTICE_PARAMETER = 3.53073      # Equimolar NiCrCo
-# LATTICE_PARAMETER = 3.546        # Equimolar NiCrCoCu
-# LATTICE_PARAMETER = 3.50931      # Fe73Ni8Cr19, alpha = +0.05
-# LATTICE_PARAMETER = 3.5150       # Fe73Ni8Cr19, alpha = -0.05
-
-# Cutoff radius in angstrom
-CUTOFF_RADIUS = 5.6                         # Fe-Ni-Cr
-# CUTOFF_RADIUS = 5.80375                   # Fe-Ni-Cr-Co-Cu
-
-# Composition must follow the element order in the potential file.
-COMPOSITION = np.array([0.73, 0.08, 0.19])       # FeNiCr
-# COMPOSITION = np.array([0.2, 0.2, 0.2, 0.2, 0.2])
-# COMPOSITION = np.array([0.0, 0.333, 0.333, 0.334, 0.0])
-# COMPOSITION = np.array([0.0, 0.25, 0.25, 0.25, 0.25])
-# COMPOSITION = np.array([1.0, 0.0, 0.0])
-
-
-# =========================================================
-# PRE-EXPORTED COORDINATION FILES
-# =========================================================
-
-# Normalized perfect-FCC coordination structure
-FCC_COORDINATION_FILE = ROOT / "data" / "coordination" / "cn_FCC.pkl"
-
-# Vacancy environments
-VACANCY_ENVIRONMENT_FILE = ROOT / "data" / "coordination" / "cn_vac.pkl"
-
-# Transition-state environments
-TRANSITION_STATE_ENVIRONMENT_FILE = ROOT / "data" / "coordination" / "cn_TS.pkl."
-
-
-# =========================================================
-# ORDERING CONDITION
-# =========================================================
-
-# Select exactly one mode: "Random" or "SRO".
-MODE = "SRO"
-
-if MODE == "Random":
-    USE_ALPHA = False
-    ALPHA_FILE = None
-elif MODE == "SRO":
-    USE_ALPHA = True
-    ALPHA_FILE = (
-        ROOT / "data" / "sro"
-        / "alpha_FeNiCr_SS_minus_point05.npy"
-    )
-else:
-    raise ValueError('MODE must be either "Random" or "SRO".')
-
-
-# =========================================================
-# DEFECT-ENVIRONMENT NORMALIZATION
-# =========================================================
-
-ENVIRONMENT_NORMALIZATION_LENGTH = 3.49869654884664 # Normalized from Pure Fe Lattice Parameter
-
-
-# =========================================================
-# SELECT CALCULATIONS
-# =========================================================
-
-# VFE and VME are calculated for both random and SRO systems
-CALCULATE_VFE_VME = True
-
-# GPFE is automatically calculated only for random systems
-CALCULATE_GPFE = not USE_ALPHA
-
-
-# =========================================================
-# DIRECT VFE/VME CALCULATION
-# =========================================================
-
-if CALCULATE_VFE_VME:
-
-    defect_results = run_vfe_vme_calculation(
-        potential_file=POTENTIAL_FILE,
-        lattice_parameter=LATTICE_PARAMETER,
-        composition=COMPOSITION,
-        fcc_coordination_file=FCC_COORDINATION_FILE,
-        vacancy_environment_file=VACANCY_ENVIRONMENT_FILE,
-        transition_state_environment_file=(
-            TRANSITION_STATE_ENVIRONMENT_FILE
-        ),
-        use_alpha=USE_ALPHA,
-        alpha_file=ALPHA_FILE,
-        environment_normalization_length=(
-            ENVIRONMENT_NORMALIZATION_LENGTH
-        ),
-    )
-
-    print_summary(
-        defect_results,
-        precision=8,
-    )
-
-    # Store calculated tables
-    fcc_table = defect_results["FCC_statistics"]
-
-    vfe_table = defect_results[
-        "VFE_site_statistics"
-    ]
-
-    ts_table = defect_results[
-        "TS_site_statistics"
-    ]
-
-    # Store individual values
-    E_FCC = defect_results["E_FCC"]
-    Sig_FCC = defect_results["Sig_FCC"]
-
-    E_VFE = defect_results["E_VFE"]
-    Sig_VFE = defect_results["Sig_VFE"]
-
-    E_TS = defect_results["E_TS"]
-    Sig_TS = defect_results["Sig_TS"]
-
-    E_VME = defect_results["E_VME"]
-    Sig_VME = defect_results["Sig_VME"]
-
-
-# =========================================================
-# DIRECT RANDOM-ALLOY GPFE CALCULATION
-# =========================================================
-
-if CALCULATE_GPFE:
-
-    gpfe_results = calculate_random_gpfe(
-        potential_file=POTENTIAL_FILE,
-        lattice_parameter=LATTICE_PARAMETER,
-        cutoff_radius=CUTOFF_RADIUS,
-        composition=COMPOSITION,
-        fcc_coordination_file=(
-            FCC_COORDINATION_FILE
-        ),
-        fault_types=(
-            "USF",
-            "ISF",
-            "UTF1",
-            "ESF",
-            "UTF2",
-            "TF",
-        ),
-    )
-
-    print_gpfe_summary(
-        gpfe_results,
-        precision=8,
-    )
-
-    # Combined GPFE summary table
-    gpfe_table = gpfe_results[
-        "GPFE_summary"
-    ]
-
-    # Individual fault-energy tables
-    form_E_USF = gpfe_results[
-        "GPFE_results"
-    ]["USF"]
-
-    form_E_ISF = gpfe_results[
-        "GPFE_results"
-    ]["ISF"]
-
-    form_E_UTF1 = gpfe_results[
-        "GPFE_results"
-    ]["UTF1"]
-
-    form_E_ESF = gpfe_results[
-        "GPFE_results"
-    ]["ESF"]
-
-    form_E_UTF2 = gpfe_results[
-        "GPFE_results"
-    ]["UTF2"]
-
-    form_E_TF = gpfe_results[
-        "GPFE_results"
-    ]["TF"]
-
-
-# =========================================================
-# AUTOMATIC GPFE SKIP FOR SRO
-# =========================================================
-
-else:
-
-    gpfe_results = None
-    gpfe_table = None
-
-    form_E_USF = None
-    form_E_ISF = None
-    form_E_UTF1 = None
-    form_E_ESF = None
-    form_E_UTF2 = None
-    form_E_TF = None
-
-    print()
-    print("=" * 58)
-    print("GPFE CALCULATION SKIPPED")
-    print("=" * 58)
-    print(
-        "USE_ALPHA = True, so this is an SRO calculation."
-    )
-    print(
-        "Only FCC, VFE, and VME are currently calculated "
-        "for SRO systems."
-    )
-    print(
-        "GPFE for SRO systems will be included in a future study."
-    )
-    print("=" * 58)
-
-
-# =========================================================
-# OPTIONAL CSV EXPORTS
-# =========================================================
-
-# ---------------------------------------------------------
-# FCC, VFE, and TS tables
-# ---------------------------------------------------------
-
-# if CALCULATE_VFE_VME:
+# =============================================================================
+# OPTIONAL RESULT VARIABLES
+# =============================================================================
 #
-#     fcc_table.to_csv(
-#         "FCC_statistics.csv"
-#     )
+# The workflow already prints the enabled calculation summaries. The aliases
+# below are provided for interactive analysis, plotting, exporting, or further
+# post-processing after this script has run.
 #
-#     vfe_table.to_csv(
-#         "VFE_site_statistics.csv",
-#         index=False,
-#     )
-#
-#     ts_table.to_csv(
-#         "TS_site_statistics.csv",
-#         index=False,
-#     )
+# Each variable remains a reference to the corresponding object stored in the
+# results dictionary.
 
 
-# ---------------------------------------------------------
-# GPFE summary table
-# ---------------------------------------------------------
-
-# if CALCULATE_GPFE:
+# FCC cohesive-energy statistics.
 #
-#     gpfe_table.to_csv(
-#         "GPFE_summary.csv",
-#         index=False,
-#     )
+# Typical rows:
+#     Mean
+#     Std
+#
+# Typical columns include:
+#     rho  : local electron-density contribution
+#     F    : embedding-energy contribution
+#     Pp   : pair-interaction contribution
+#     E    : total per-atom energy
+cohesive_table = results["cohesive_table"]
+
+
+# Site-resolved vacancy-formation-energy information.
+#
+# This table contains statistics associated with each unique vacancy
+# coordination environment used to assemble the total VFE distribution.
+vfe_table = results["vfe_table"]
+
+
+# Site-resolved transition-state excess-energy information.
+#
+# This table contains the statistics of the unique saddle-point coordination
+# environments used in the analytical VME calculation.
+ts_table = results["ts_table"]
+
+
+# Generalized planar-fault-energy statistics.
+#
+# Depending on the calculation settings in energy_workflow.py, this table may
+# contain results for unstable stacking fault, intrinsic stacking fault,
+# unstable twinning fault, extrinsic stacking fault, and related fault states.
+gpfe_table = results["gpfe_table"]
+
+
+# =============================================================================
+# ADDITIONAL SCALAR OUTPUTS
+# =============================================================================
+#
+# The results dictionary may also contain scalar quantities such as:
+#
+#     results["E_VFE"]    : average vacancy formation energy
+#     results["Sig_VFE"]  : VFE standard deviation
+#     results["E_TS"]     : average transition-state excess energy
+#     results["Sig_TS"]   : transition-state standard deviation
+#     results["E_VME"]    : average vacancy migration energy
+#     results["Sig_VME"]  : VME standard deviation
+#
+# These entries can be accessed directly when needed, for example:
+#
+# average_vfe = results["E_VFE"]
+# std_vfe = results["Sig_VFE"]
+# average_vme = results["E_VME"]
+# std_vme = results["Sig_VME"]

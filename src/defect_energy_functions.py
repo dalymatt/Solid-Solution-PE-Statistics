@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Reusable functions for analytical FCC, VFE, and VME calculations.
+Reusable functions for analytical FCC, VFE, VME, and GPFE calculations.
+
+Equation references
+-------------------
+* ``Vacancy manuscript``: Baski et al., revised manuscript supplied with
+  this repository. Cohesive/SRO statistics: Eqs. (3)-(12); average VFE/VME:
+  Eqs. (13)-(14); defect-energy fluctuations: Eqs. (15)-(21).
+* ``CMS-2022``: Jagatramka et al., Computational Materials Science 214
+  (2022) 111763. Cohesive statistics: Eqs. (1)-(10); GPFE: Eqs. (11)-(16).
 
 The perfect-FCC coordination/structure-factor array is loaded directly
-from a pre-exported pickle file.
+from a pre-exported pickle file. Numerical expressions are preserved.
 """
 
 from __future__ import annotations
@@ -210,7 +218,12 @@ def calculate_vfe_statistics(
     alpha: np.ndarray,
     potential_data: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Calculate analytical vacancy-formation-energy statistics."""
+    """Calculate analytical vacancy-formation-energy statistics.
+
+    Mean VFE: vacancy-manuscript Eq. (13).
+    Per-environment excess variance: Eqs. (15)-(16).
+    Population-weighted total variance: Eqs. (17)-(20).
+    """
     number_of_sites = len(unique_environments)
     statistics = np.zeros((number_of_sites, 6), dtype=float)
 
@@ -263,19 +276,27 @@ def calculate_vfe_statistics(
 
         frequency = frequencies[index]
 
+        # Population-weighted excess cohesive energy, Eq. (13):
+        # E_VFE = sum_k N_k^vac (E_k^vac - E_FCC).
         mean_vfe += (
             site_mean - fcc_mean
         ) * frequency
 
-        # Preserves the variance expression from the original code.
+        # Excess-energy variance, Eq. (16), using the manuscript
+        # near-perfect-correlation approximation cov(E_k,E_FCC) ~=
+        # sigma_k*sigma_FCC. The explicitly calculated covariance above is
+        # retained in the output table for diagnostics but is not used here.
         sigma_excess = (
             site_std**2
             + fcc_std**2
             - 2.0 * site_std * fcc_std
         )
 
+        # First term of Eq. (19): sum_k N_k sigma_{Delta E_k}^2.
         variance_sum_1 += frequency * sigma_excess
 
+        # Intra-environment covariance term in Eq. (19), assuming all atoms
+        # sharing environment k fluctuate coherently [Eq. (18)].
         variance_sum_2 += (
             2.0
             * sigma_excess
@@ -284,6 +305,8 @@ def calculate_vfe_statistics(
             / 2.0
         )
 
+    # Equivalent to Eq. (20): sigma_VFE^2 = sum_k (N_k^vac)^2
+    # sigma_{Delta E_k}^2.
     std_vfe = np.sqrt(
         variance_sum_1 + variance_sum_2
     )
@@ -333,6 +356,10 @@ def calculate_ts_vme_statistics(
 ) -> Dict[str, Any]:
     """
     Calculate transition-state excess-energy and VME statistics.
+
+    Mean VME follows vacancy-manuscript Eq. (14): transition-state excess
+    cohesive energy minus the mean VFE. Transition-state variance follows
+    Eqs. (15)-(20), and VME variance follows Eq. (21).
     """
     number_of_sites = len(unique_environments)
     statistics = np.zeros((number_of_sites, 6), dtype=float)
@@ -376,19 +403,26 @@ def calculate_ts_vme_statistics(
 
         frequency = frequencies[index]
 
+        # Transition-state excess cohesive-energy sum in Eq. (14).
         mean_ts += (
             site_mean - fcc_mean
         ) * frequency
 
-        # Preserves the variance expression from the original code.
+        # Excess-energy variance, Eq. (16), using the manuscript
+        # near-perfect-correlation approximation cov(E_k,E_FCC) ~=
+        # sigma_k*sigma_FCC. The explicitly calculated covariance above is
+        # retained in the output table for diagnostics but is not used here.
         sigma_excess = (
             site_std**2
             + fcc_std**2
             - 2.0 * site_std * fcc_std
         )
 
+        # First term of Eq. (19): sum_k N_k sigma_{Delta E_k}^2.
         variance_sum_1 += frequency * sigma_excess
 
+        # Intra-environment covariance term in Eq. (19), assuming all atoms
+        # sharing environment k fluctuate coherently [Eq. (18)].
         variance_sum_2 += (
             2.0
             * sigma_excess
@@ -401,7 +435,10 @@ def calculate_ts_vme_statistics(
         variance_sum_1 + variance_sum_2
     )
 
+    # Vacancy migration energy, Eq. (14).
     mean_vme = mean_ts - mean_vfe
+    # VME standard deviation, Eq. (21); aggregate TS and VFE
+    # distributions are treated as statistically independent.
     std_vme = np.sqrt(
         std_ts**2 + std_vfe**2
     )
@@ -776,33 +813,111 @@ def calculate_random_gpfe(
     }
 
 
-def print_gpfe_summary(
+def print_gpfe_summary(results, precision=8):
+    """
+    Print GPFE results in a compact table.
+    """
+
+    gpfe = results["GPFE_results"]
+
+    top = ["USF", "UTF1", "UTF2"]
+    bottom = ["ISF", "ESF", "TF"]
+
+    print()
+    print("=" * 74)
+    print("GENERALIZED PLANAR FAULT ENERGIES (eV/atom)")
+    print("=" * 74)
+
+    # ---------- first row ----------
+    print(
+        f"{'':8}"
+        + "".join(f"{('E_'+x):>16}" for x in top)
+    )
+
+    print(
+        f"{'Mean':<8}"
+        + "".join(
+            f"{gpfe[x].loc['Mean', 'E_'+x]:>16.{precision}f}"
+            for x in top
+        )
+    )
+
+    print(
+        f"{'Std':<8}"
+        + "".join(
+            f"{gpfe[x].loc['Std', 'E_'+x]:>16.{precision}f}"
+            for x in top
+        )
+    )
+
+    print()
+
+    # ---------- second row ----------
+    print(
+        f"{'':8}"
+        + "".join(f"{('E_'+x):>16}" for x in bottom)
+    )
+
+    print(
+        f"{'Mean':<8}"
+        + "".join(
+            f"{gpfe[x].loc['Mean', 'E_'+x]:>16.{precision}f}"
+            for x in bottom
+        )
+    )
+
+    print(
+        f"{'Std':<8}"
+        + "".join(
+            f"{gpfe[x].loc['Std', 'E_'+x]:>16.{precision}f}"
+            for x in bottom
+        )
+    )
+
+    print("=" * 74)
+
+
+def print_summary(
     results: Dict[str, Any],
     precision: int = 8,
 ) -> None:
-    """Print random-alloy GPFE means and standard deviations."""
-    print("=" * 58)
-    print("RANDOM-ALLOY GPFE SUMMARY")
-    print("=" * 58)
+    """
+    Print only VFE, TS, and VME statistics.
+    """
 
-    fcc_table = results["FCC_statistics_GPFE"]
+    print("=" * 60)
+    print("DEFECT ENERGY SUMMARY")
+    print("=" * 60)
 
     print(
-        f"FCC cohesive energy average = "
-        f"{float(fcc_table.loc['Mean', 'E']):.{precision}f} eV/atom"
+        f"VFE average                 = "
+        f"{results['E_VFE']:.{precision}f} eV"
     )
     print(
-        f"FCC cohesive energy stdev   = "
-        f"{float(fcc_table.loc['Std', 'E']):.{precision}f} eV/atom"
+        f"VFE stdev                   = "
+        f"{results['Sig_VFE']:.{precision}f} eV"
     )
 
-    print("-" * 58)
+    print("-" * 60)
 
-    for _, row in results["GPFE_summary"].iterrows():
-        print(
-            f"{row['Fault']:<5s} mean = "
-            f"{row['Mean (eV/atom)']:.{precision}f} eV/atom, "
-            f"stdev = {row['Std (eV/atom)']:.{precision}f} eV/atom"
-        )
+    print(
+        f"TS excess energy average    = "
+        f"{results['E_TS']:.{precision}f} eV"
+    )
+    print(
+        f"TS excess energy stdev      = "
+        f"{results['Sig_TS']:.{precision}f} eV"
+    )
 
-    print("=" * 58)
+    print("-" * 60)
+
+    print(
+        f"VME average                 = "
+        f"{results['E_VME']:.{precision}f} eV"
+    )
+    print(
+        f"VME stdev                   = "
+        f"{results['Sig_VME']:.{precision}f} eV"
+    )
+
+    print("=" * 60)
