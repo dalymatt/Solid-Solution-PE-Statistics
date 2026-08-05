@@ -469,7 +469,6 @@ VME stdev                   = 0.05465694 eV
 
 An example VFE/VME distribution image may be embedded using:
 
-```html
 
 <p align="center"> <img src="Images/vfevme.png" alt="VFE and VME distributions for Fe73Ni8Cr19" width="700"> </p>
 
@@ -477,7 +476,7 @@ An example VFE/VME distribution image may be embedded using:
 
 
 The SRO calculation uses the supplied Warren–Cowley parameter file to incorporate local chemical ordering into the FCC cohesive-energy, vacancy formation energy (VFE), and vacancy migration energy (VME) calculations. GPFE calculations are automatically skipped for SRO systems.
-```
+
 
 The program also reports the average and standard deviation of the following FCC cohesive-energy quantities:
 
