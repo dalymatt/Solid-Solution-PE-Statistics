@@ -470,7 +470,11 @@ VME stdev                   = 0.05465694 eV
 An example VFE/VME distribution image may be embedded using:
 
 
-<p align="center"> <img src="Images/vfevme.PNG" alt="VFE and VME distributions for Fe73Ni8Cr19" width="700"> </p>
+<p align="center">
+  <img src="./Images/vfevme.png"
+       alt="VFE and VME distributions for Fe73Ni8Cr19"
+       width="700">
+</p>
 
 
 
