@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+title: Solid-Solution Potential-Energy Statistics
+message: Please cite the relevant paper when using this software.
+type: software
+authors:
+  - family-names: Baski
+    given-names: Akash
+  - family-names: Jagatramka
+    given-names: Ritesh
+  - family-names: Daly
+    given-names: Matthew
+repository-code: https://github.com/dalymatt/Solid-Solution-PE-Statistics
+license: GPL-3.0-only

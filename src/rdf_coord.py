@@ -142,19 +142,33 @@ def rdf_coord_bcc(a0,rc):
     return rdf,cn_array
 
 
-def rdf_coord_fault(a0,rc,cn_FCC,name):
+def rdf_coord_fault(a0: object, rc: object, cn_FCC: object, name: object) -> object:
     # Loading the pkl files with stored coordintation details
     import pickle
-    name='cn_'+ name +'.pkl'
-    with open(name, 'rb') as f:
-        jj=pickle.load(f)
+    from pathlib import Path
+
+    filename = 'cn_' + str(name) + '.pkl'
+    candidates = [
+        Path(filename),
+        Path(__file__).resolve().parent.parent / 'data' / 'coordination' / filename,
+    ]
+    coord_file = next((path for path in candidates if path.exists()), None)
+    if coord_file is None:
+        raise FileNotFoundError(
+            f"Could not locate {filename}. Checked: "
+            + ", ".join(str(path) for path in candidates)
+        )
+
+    with coord_file.open('rb') as f:
+        jj = pickle.load(f)
         
     cn_f=[]
     rdf_f=[]    
     
+    
     # Looping for all the layers, everything else is similar to the FCC and other lattices
-    for i in range (np.shape(jj)[0]):  
-        if i!=0 and i!=(np.shape(jj)[0])-1 and i!=1 and i!=(np.shape(jj)[0])-2: 
+    for i in range (len(jj)):  
+        if i!=0 and i!=(len(jj))-1 and i!=1 and i!=(len(jj))-2: 
             # Here, not choosing the top 2 and bottom 2 ones because it has surface effects included that has to be ignored. 
             # This might need to be changed and more top and bottom layers need to be added if the cutoff is higher than 6.5
             atomic_dist_ratios = jj[i][:,0] 

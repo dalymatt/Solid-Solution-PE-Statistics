@@ -227,7 +227,7 @@ def potential_stats_fault(rrange,rhorange,rho,Fr,Pp,comp,cn,cn_fault,form_E_fcc,
     E_element_fault=[]
     
     # This loop is used to calculate mean and standard deviation associated with the fault that is used for the excess GPFE calculation
-    for i1 in range (np.shape(cn_fault)[0]):   
+    for i1 in range(len(cn_fault)):   
     #Rho Calculation
         rho_bar=0
         rho_cn=np.zeros((np.shape(cn_fault[i1])[0],np.shape(comp)[0]))
@@ -330,9 +330,9 @@ def potential_stats_fault(rrange,rhorange,rho,Fr,Pp,comp,cn,cn_fault,form_E_fcc,
     
     form_E_fault=np.array(form_E_fault) #Converting to an array
     #Covariance Calculation for faulted state Eq 11 in the manuscript
-    covar_f=np.sum(E_element_fcc*np.array(E_element_fault)*comp*1/np.shape(E_element_fault)[0])-form_E_fcc['E']['Mean']*np.mean(form_E_fault[:,0])  
+    covar_f=np.sum(E_element_fcc*np.array(E_element_fault)*comp*1/len(E_element_fault))-form_E_fcc['E']['Mean']*np.mean(form_E_fault[:,0])  
     # Total fault energy standard deviation across all the faulted layers
-    sum_f_std= np.sqrt(sum(form_E_fault[:,1]**2+(form_E_fault[:,0]-np.average(form_E_fault[:,0]))**2)/np.shape(form_E_fault[:,1])[0])
+    sum_f_std= np.sqrt(sum(form_E_fault[:,1]**2+(form_E_fault[:,0]-np.average(form_E_fault[:,0]))**2)/len(form_E_fault[:,1]))
     # Excess fault energy average and Standard Deviation calcualtions
     avg_f=np.sum(form_E_fault[:,0])-form_E_fcc['E']['Mean']*np.shape(form_E_fault)[0] # Eq 8 Average Excess fault energy
     std_f=np.sqrt(sum_f_std**2+form_E_fcc['E']['Std']**2-2*covar_f)  # Eq 10 Std dev Excess fault energy
