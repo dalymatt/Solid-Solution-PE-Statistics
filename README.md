@@ -338,15 +338,8 @@ Example output
 
 
 <p align="center">
-
-&#x20; <img src="Images/SRO\_stats.png"
-
-&#x20;      alt="FeNiCr SRO cohesive-energy statistics"
-
-&#x20;      width="700">
-
+  <img src="Images/SRO_stats.png" alt="FeNiCr SRO cohesive-energy statistics" width="700">
 </p>
-
 
 
 The figure above illustrates the cohesive-energy statistics obtained for the SRO alloy using the supplied Warren–Cowley parameter file.
