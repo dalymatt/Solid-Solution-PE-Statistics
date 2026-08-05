@@ -91,7 +91,7 @@ When `MODE = "SRO"`, the main script automatically skips the GPFE calculation.
 
 - `data/coordination/cn_FCC.pkl` contains the normalized perfect-FCC coordination structure.
 - `data/coordination/cn_vac.pkl` contains vacancy-affected environments.
-- `data/coordination/TS_rel.pkl` contains migration transition-state environments.
+- `data/coordination/cn_TS.pkl` contains migration transition-state environments.
 - `data/sro/*.npy` contains example Warren–Cowley SRO arrays.
 - Potential files are stored separately under `potentials/`.
 - LAMMPS configurations are stored separately under `structures/` and are not interatomic potentials.
