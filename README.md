@@ -471,7 +471,7 @@ An example VFE/VME distribution image may be embedded using:
 
 ```html
 <p align="center">
-  <img src="Images/vfe\_vme.png"
+  <img src="Images/vfevme.png"
        alt="VFE and VME distributions for Fe73Ni8Cr19"
        width="700">
 </p>
