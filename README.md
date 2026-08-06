@@ -98,35 +98,6 @@ For example, a Ni–Co alloy containing 40 at.% Ni and 60 at.% Co may be defined
 
 > \*\*Important:\*\* The composition fractions must sum to 1. The length of the composition array determines the number of chemical components in the system.
 
-### Crystal structure and coordination relations
-
-The current VFE/VME implementation is developed for FCC alloys. Instead of generating the coordination relations during each calculation, the program loads pre-exported coordination files from the data/coordination directory.
-
-
-
-FCC\_COORDINATION\_FILE = (
-
-&#x20;   ROOT / "data" / "coordination" / "cn\_FCC.pkl"
-
-)
-
-
-
-VACANCY\_ENVIRONMENT\_FILE = (
-
-&#x20;   ROOT / "data" / "coordination" / "cn\_vac.pkl"
-
-)
-
-
-
-TRANSITION\_STATE\_ENVIRONMENT\_FILE = (
-
-&#x20;   ROOT / "data" / "coordination" / "cn\_TS.pkl"
-
-)
-
-
 
 ### EAM potential file
 
