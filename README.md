@@ -105,11 +105,7 @@ Specify the EAM/alloy potential file using the POTENTIAL\_FILE variable:
 
 
 
-POTENTIAL\_FILE = (
-
-&#x20;   ROOT / "potentials" / "FeNiCr.eam.alloy"
-
-)
+POTENTIAL\_FILE = ( ROOT / "potentials" / "FeNiCr.eam.alloy")
 
 
 
@@ -121,11 +117,7 @@ To use a different EAM/alloy potential, update the filename while preserving the
 
 
 
-POTENTIAL\_FILE = (
-
-&#x20;   ROOT / "potentials" / "NiCo-lammps-2014.alloy"
-
-)
+POTENTIAL\_FILE = ( ROOT / "potentials" / "NiCo-lammps-2014.alloy")
 
 
 
