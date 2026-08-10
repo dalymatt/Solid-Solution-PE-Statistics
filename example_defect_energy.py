@@ -107,12 +107,12 @@ POTENTIAL_FILE = ROOT / "potentials" / "FeNiCr.eam.alloy"
 #     1. the selected alloy composition,
 #     2. the selected random/SRO state, and
 #     3. the selected EAM potential.
-LATTICE_PARAMETER = 3.5225        # Fe0.33Ni0.33Cr0.34, random alloy
+#LATTICE_PARAMETER = 3.5225        # Fe0.33Ni0.33Cr0.34, random alloy
 
 # Additional examples:
 # LATTICE_PARAMETER = 3.51036     # Fe0.73Ni0.08Cr0.19, random alloy
-# LATTICE_PARAMETER = 3.50931     # Fe0.73Ni0.08Cr0.19, alpha_ij = +0.05
-# LATTICE_PARAMETER = 3.51500     # Fe0.73Ni0.08Cr0.19, alpha_ij = -0.05
+LATTICE_PARAMETER = 3.50931     # Fe0.73Ni0.08Cr0.19, alpha_ij = +0.05
+#LATTICE_PARAMETER = 3.51500     # Fe0.73Ni0.08Cr0.19, alpha_ij = -0.05
 
 # LATTICE_PARAMETER = 3.53073      # Equimolar NiCrCo
 # LATTICE_PARAMETER = 3.546        # Equimolar NiCrCoCu
@@ -153,10 +153,10 @@ CUTOFF_RADIUS = 5.6               # FeNiCr potential
 # Thus, the active input corresponds to:
 #
 #     Fe0.33 Ni0.33 Cr0.34
-COMPOSITION = np.array([0.33, 0.33, 0.34], dtype=float)
+#COMPOSITION = np.array([0.33, 0.33, 0.34], dtype=float)
 
 # Additional examples:
-# COMPOSITION = np.array([0.73, 0.08, 0.19], dtype=float)
+COMPOSITION = np.array([0.73, 0.08, 0.19], dtype=float)
 #
 # For a five-component potential whose element order is
 # [Fe, Ni, Cr, Co, Cu]:
@@ -189,8 +189,8 @@ COMPOSITION = np.array([0.33, 0.33, 0.34], dtype=float)
 #
 # where P_ij^(zeta) is the conditional probability of finding species j
 # around species i in shell zeta, and c_j is the global concentration of j.
-MODE = "Random"
-# MODE = "SRO"
+#MODE = "Random"
+MODE = "SRO"
 
 
 # -----------------------------------------------------------------------------
@@ -208,6 +208,7 @@ MODE = "Random"
 # This file is used only when MODE = "SRO". It may remain defined while
 # MODE = "Random"; in that case, the workflow ignores it and uses alpha = 0.
 ALPHA_FILE = (ROOT / "data" / "sro" / "alpha_FeNiCr_SS_point05.npy")
+#ALPHA_FILE = (ROOT / "data" / "sro" / "alpha_FeNiCr_SS_minus_point05.npy")
 
 
 # =============================================================================
