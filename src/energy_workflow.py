@@ -12,9 +12,10 @@ Public function
 ---------------
 run_energy_calculations()
 
-The example input file only needs to provide the material-specific inputs.
-All calculation switches, fault types, standard coordination-file paths,
-and defect-environment normalization settings are defined in this module.
+All calculation switches, fault types, the paths of the defectenvironment files in
+``data/coordination``, and the environment normalization length are
+defined in this module. Perfect-FCC structure factors are generated from
+the lattice parameter and cutoff radius.
 """
 
 from contextlib import contextmanager
@@ -114,29 +115,6 @@ def _validate_inputs(
         return composition_array, True, alpha_path
 
     raise ValueError('MODE must be either "Random" or "SRO".')
-
-
-# =========================================================
-# WORKING-DIRECTORY HELPER
-# =========================================================
-
-@contextmanager
-def _working_directory(directory: PathLike):
-    """
-    Temporarily change the working directory.
-
-    rdf_coord_fault() reads files such as cn_ISF.pkl by filename, so it
-    must be called from the directory containing the fault files.
-    """
-
-    previous_directory = Path.cwd()
-    os.chdir(directory)
-
-    try:
-        yield
-    finally:
-        os.chdir(previous_directory)
-
 
 # =========================================================
 # FCC COORDINATION AND SRO PARAMETERS
@@ -424,13 +402,12 @@ def _calculate_gpfe_statistics(
                 f"{fault_file}"
             )
 
-        with _working_directory(coordination_directory):
-            _, cn_fault = rc.rdf_coord_fault(
-                lattice_parameter,
-                cutoff_radius,
-                fcc_coordination,
-                fault_type,
-            )
+        _, cn_fault = rc.rdf_coord_fault(
+            lattice_parameter,
+            cutoff_radius,
+            fcc_coordination,
+            fault_type,
+        )
 
         table, covariance = pot_gpfe.potential_stats_fault(
             rrange,

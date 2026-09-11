@@ -1,14 +1,14 @@
 # Commented analytical-energy Python modules
 
-The calculations are unchanged; comments and docstrings were added to identify
-the physical quantities and manuscript equations.
+This file maps each module to the equations it implements.
 
 ## Equation map
 
 - `Potential.py`: vacancy manuscript Eqs. (1)-(9); random-alloy counterparts in Jagatramka et al. (2022), Eqs. (1)-(10).
-- `defect_energy_functions.py`: average VFE/VME, vacancy manuscript Eqs. (10)-(12); variances, Eqs. (13)-(14); GPFE, Jagatramka et al. (2022), Eqs. (11)-(16).
+- `defect_energy_functions.py`: mean VFE/VME, vacancy manuscript Eqs. (10)-(11); spreads, Eqs. (12)-(14) and Appendix B. 
 - `Potential_GPFE.py`: Jagatramka et al. (2022), cohesive Eqs. (1)-(10), GPFE Eqs. (11)-(16), and Appendices B-C.
 - `energy_workflow.py`: orchestration layer linking the calculations above.
+- `rdf_coord.py`: perfect-FCC structure factors
 
 ## References
 

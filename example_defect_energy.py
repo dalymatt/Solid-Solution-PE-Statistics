@@ -13,6 +13,7 @@ procedures are implemented in:
     src/defect_energy_functions.py
     src/Potential.py
     src/Potential_GPFE.py
+    src/rdf_coord.py
 
 Analytical basis
 ----------------
@@ -23,8 +24,8 @@ Analytical basis
    https://doi.org/10.1016/j.commatsci.2022.111763
 
 2. A. Baski, R. Jagatramka, and M. Daly,
-   "A mechanistic model for vacancy 
-       energetics in concentrated solid solutions with short-range order"
+    "A mechanistic model for vacancy energetics in concentrated solid 
+    solutions with short-range order"
 
 The workflow evaluates statistical energy landscapes using an EAM/alloy
 potential, FCC coordination structure factors, alloy composition, and,

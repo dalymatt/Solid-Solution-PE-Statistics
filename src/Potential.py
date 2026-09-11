@@ -9,9 +9,12 @@ Equation references
 [CMS 2022] R. Jagatramka, C. Wang, and M. Daly, Computational Materials
 Science 214 (2022) 111763, doi:10.1016/j.commatsci.2022.111763.
 
-The calculation follows the coordination-shell reparameterization of the
-embedded-atom method (EAM). Warren-Cowley short-range-order parameters; see vacancy
-manuscript Eqs. (1)-(9). 
+The calculation follows the coordination-shell reparameterization
+of the embedded-atom method (EAM), with Warren-Cowley short-range-order
+parameters entering through the conditional pair probabilities p(Y|X)
+= c_Y (1 - alpha_XY); see vacancy manuscript Eqs. (1)-(9). 
+Shell-resolved alpha values are mapped onto the peaks of each coordination
+environment by distance.
 """
 
 def potential_read(fname='NiCo-lammps-2014.alloy'):
@@ -50,8 +53,7 @@ def potential_read(fname='NiCo-lammps-2014.alloy'):
                 m=0
                 k=k+1    
        
-    k=6
-    # check1=[]
+    k=6    
     for i in np.arange(0,chem):
         m=0
         for j in np.arange(0,Nr): 
@@ -99,31 +101,6 @@ def potential_read(fname='NiCo-lammps-2014.alloy'):
     rhorange=np.arange(0,Nrho)*drho
 #%%    
     return rrange,rhorange,rho,Fr,Pp
-#%%
-def potential_fetch(rrange,rhorange,rho,Fr,Pp,atoms,Neighbors,ind):
-    """Evaluate the conventional atom-resolved EAM terms for one atom.
-
-    This is the direct site form of vacancy-manuscript Eq. (1), with the
-    local electron density defined by Eq. (2).
-    """
-#%%
-    import numpy as np
-    
-    rho_a=0
-    Fr_a=0
-    Pp_a=0    
-    
-    for i in np.arange(1,np.shape(Neighbors[1])[1]):    
-        #print(i)
-        r=Neighbors[0][ind,i]
-        cent=int(atoms[ind,3]-1)
-        pair=int(atoms[Neighbors[1][ind,i],3]-1)        
-        rho_a=rho_a+np.interp(r,rrange,rho[:,pair])        
-        Pp_a=Pp_a+(0.5*np.interp(r,rrange,Pp[:,cent,pair]))/r
-        
-    Fr_a=np.interp(rho_a,rhorange,Fr[:,cent])
-    return rho_a, Fr_a, Pp_a
-
 
 #%%
 def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
@@ -318,7 +295,7 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
     form_E[0, 1] = F_bar
     form_E[1, 1] = F_std
     # Mean pair contribution (1/2 avoids double counting):
-    # vacancy manuscript Eq. (4); CMS-2022 Eq. (3).
+    # vacancy manuscript Eq. (3)-(4); CMS-2022 Eq. (3).
     form_E[0, 2] = np.sum(Pp_bar) * 0.5
 
     Pp_std_cn = np.zeros((np.shape(cn)[0], np.shape(comp)[0]))
