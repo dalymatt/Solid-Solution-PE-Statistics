@@ -8,7 +8,7 @@ This file maps each module to the equations it implements.
 - `defect_energy_functions.py`: mean VFE/VME, vacancy manuscript Eqs. (10)-(11); spreads, Eqs. (12)-(14) and Appendix B. 
 - `Potential_GPFE.py`: Jagatramka et al. (2022), cohesive Eqs. (1)-(10), GPFE Eqs. (11)-(16), and Appendices B-C.
 - `energy_workflow.py`: orchestration layer linking the calculations above.
-- `rdf_coord.py`: perfect-FCC structure factors (ideal shell ratios times the lattice parameter) and the loader for the faultedlayer structure factors in `data/coordination`.
+- `rdf_coord.py`: perfect-FCC structure factors (ideal shell ratios times the lattice parameter) and the loader for the faulted-layer structure factors in `data/coordination`.
 
 ## References
 

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Reusable functions for analytical FCC, VFE, VME.
+Reusable functions for analytical FCC, VFE, VME statistics.
 
 Equation references
 -------------------
 * A. Baski, R. Jagatramka, and M. Daly, "A mechanistic model for vacancy
-energetics in concentrated solid solutions with shortrange order" 
+energetics in concentrated solid solutions with short-range order" 
 Cohesive/SRO statistics: Eqs. (1)-(9); average VFE/VME:
 Eqs. (10)-(11); spreads: Eqs. (12)-(14) and Appendix B.
 
