@@ -285,7 +285,7 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
             for k in np.arange(0, np.shape(cn)[0]):
                 Pp_cn[k, i, j] = np.interp(cn[k, 0], rrange, Pp[:, i, j]) / cn[k, 0]
                 # Ordered pair probability C_i C_j (1-alpha_kij):
-                # vacancy manuscript Eqs. (5)-(7).
+                # vacancy manuscript Eqs. (3)-(4).
                 Pp_ind += comp[i]*comp[j]*cn[k,1]*Pp_cn[k,i,j]*(1-alpha[k,i,j])
             Pp_bar[i, j] = Pp_ind
 
@@ -295,7 +295,7 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
     form_E[0, 1] = F_bar
     form_E[1, 1] = F_std
     # Mean pair contribution (1/2 avoids double counting):
-    # vacancy manuscript Eq. (3)-(4); CMS-2022 Eq. (3).
+    # vacancy manuscript Eq. (4); CMS-2022 Eq. (3).
     form_E[0, 2] = np.sum(Pp_bar) * 0.5
 
     Pp_std_cn = np.zeros((np.shape(cn)[0], np.shape(comp)[0]))

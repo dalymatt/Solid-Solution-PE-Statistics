@@ -12,16 +12,14 @@ Public function
 ---------------
 run_energy_calculations()
 
-All calculation switches, fault types, the paths of the defectenvironment files in
+All calculation switches, fault types, the paths of the defect-environment files in
 ``data/coordination``, and the environment normalization length are
 defined in this module. Perfect-FCC structure factors are generated from
 the lattice parameter and cutoff radius.
 """
 
-from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Dict, Optional, Sequence, Tuple, Union
-import os
 
 import numpy as np
 import pandas as pd

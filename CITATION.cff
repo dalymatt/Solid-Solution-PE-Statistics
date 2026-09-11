@@ -1,13 +1,96 @@
 cff-version: 1.2.0
-title: Solid-Solution Potential-Energy Statistics
-message: Please cite the relevant paper when using this software.
+message: >-
+  If you use this software, please cite both papers listed under
+  "references" below: the 2022 Computational Materials Science paper for
+  the cohesive-energy and planar-fault statistics, and the Baski et al.
+  manuscript for the short-range-order, vacancy formation, and vacancy
+  migration statistics. The Baski et al. entry will be updated with journal,
+  volume, pages, and DOI when the article is published.
+title: Solid-Solution-PE-Statistics
+abstract: >-
+  Analytical calculation of the statistical distributions (mean and standard
+  deviation) of cohesive energies, vacancy formation and migration energies,
+  and generalized planar fault energies in concentrated FCC solid solutions
+  described by embedded-atom-method potentials, for random alloys and for
+  alloys with Warren-Cowley short-range order.
 type: software
 authors:
   - family-names: Baski
     given-names: Akash
+    affiliation: University of Illinois Chicago
   - family-names: Jagatramka
     given-names: Ritesh
+    affiliation: University of Illinois Chicago
+  - family-names: Wang
+    given-names: Chu
+    affiliation: University of Illinois Chicago
+  - family-names: Del Valle
+    given-names: Ariana Sofia
+    affiliation: University of Illinois Chicago
+  - family-names: Shirsalimian
+    given-names: Amir
+    affiliation: University of Illinois Chicago
   - family-names: Daly
     given-names: Matthew
+    affiliation: University of Illinois Chicago
+    email: mattdaly@uic.edu
 repository-code: https://github.com/dalymatt/Solid-Solution-PE-Statistics
+url: https://amml.lab.uic.edu/
 license: GPL-3.0-only
+version: 2.0.0
+date-released: "2026-09-11"
+keywords:
+  - concentrated solid solutions
+  - high-entropy alloys
+  - short-range order
+  - vacancy formation energy
+  - vacancy migration energy
+  - generalized planar fault energy
+  - embedded-atom method
+preferred-citation:
+  type: article
+  title: An analytical method to quantify the statistics of energy landscapes in random solid solutions
+  authors:
+    - family-names: Jagatramka
+      given-names: Ritesh
+    - family-names: Wang
+      given-names: Chu
+    - family-names: Daly
+      given-names: Matthew
+  journal: Computational Materials Science
+  volume: 214
+  start: 111763
+  year: 2022
+  doi: 10.1016/j.commatsci.2022.111763
+references:
+  - type: article
+    title: An analytical method to quantify the statistics of energy landscapes in random solid solutions
+    authors:
+      - family-names: Jagatramka
+        given-names: Ritesh
+      - family-names: Wang
+        given-names: Chu
+      - family-names: Daly
+        given-names: Matthew
+    journal: Computational Materials Science
+    volume: 214
+    start: 111763
+    year: 2022
+    doi: 10.1016/j.commatsci.2022.111763
+    notes: Cohesive-energy statistics (Eqs. 1-10) and generalized planar fault energy statistics (Eqs. 11-16).
+  - type: unpublished
+    title: A mechanistic model for vacancy energetics in concentrated solid solutions with short-range order
+    authors:
+      - family-names: Baski
+        given-names: Akash
+      - family-names: Jagatramka
+        given-names: Ritesh
+      - family-names: Daly
+        given-names: Matthew
+    year: 2026
+    status: in-preparation
+    notes: >-
+      Short-range-order extension of the cohesive-energy statistics
+      (Eqs. 1-9) and vacancy formation and migration energy statistics
+      (Eqs. 10-14). Replace this entry with the published article
+      (journal, volume, pages, DOI) when available.
