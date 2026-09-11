@@ -259,8 +259,7 @@ MODE = "SRO"
 
 ```python
 
-ALPHA\_FILE = (ROOT / "data" / "sro" / "alpha\_FeNiCr\_SS\_minus\_point05.npy")
-
+ALPHA_FILE = (ROOT / "data" / "sro" / "304SS" / "alpha_Fe73Ni8Cr19_alpha_p0p05.npy")
 ```
 
 
