@@ -108,12 +108,12 @@ POTENTIAL_FILE = ROOT / "potentials" / "FeNiCr.eam.alloy"
 #     1. the selected alloy composition,
 #     2. the selected random/SRO state, and
 #     3. the selected EAM potential.
-#LATTICE_PARAMETER = 3.5225        # Fe0.33Ni0.33Cr0.34, random alloy
+
+LATTICE_PARAMETER = 3.51036       # Fe0.73Ni0.08Cr0.19, random alloy
 
 # Additional examples:
-LATTICE_PARAMETER = 3.51036     # Fe0.73Ni0.08Cr0.19, random alloy
-
-
+#LATTICE_PARAMETER = 3.5225       # Fe0.33Ni0.33Cr0.34, random alloy
+#LATTICE_PARAMETER = 3.512        # Ni0.4Co0.6, random alloy
 #LATTICE_PARAMETER = 3.53073      # Equimolar NiCrCo
 #LATTICE_PARAMETER = 3.546        # Equimolar NiCrCoCu
 #LATTICE_PARAMETER = 3.54939      # Equimolar FeNiCrCoCu
@@ -128,10 +128,11 @@ LATTICE_PARAMETER = 3.51036     # Fe0.73Ni0.08Cr0.19, random alloy
 #
 # The cutoff must be consistent with the selected potential and with the
 # coordination data used by the analytical defect-energy calculations.
-CUTOFF_RADIUS = 5.6               # FeNiCr potential
+CUTOFF_RADIUS = 5.6              # FeNiCr potential
 
 # Alternative example:
 #CUTOFF_RADIUS = 5.80375         # FeNiCrCoCu potential
+#CUTOFF_RADIUS = 6.5             # NiCo potential
 
 
 # -----------------------------------------------------------------------------
@@ -152,12 +153,15 @@ CUTOFF_RADIUS = 5.6               # FeNiCr potential
 #
 # Thus, the active input corresponds to:
 #
-#     Fe0.33 Ni0.33 Cr0.34
-#COMPOSITION = np.array([0.33, 0.33, 0.34], dtype=float)
-
-# Additional examples:
+#     [Fe,  Ni,  Cr]
 COMPOSITION = np.array([0.73, 0.08, 0.19], dtype=float)
+# Additional examples:
+#COMPOSITION = np.array([0.33, 0.33, 0.34], dtype=float)
 #
+# For a two-component potential whose element order is
+# [Ni, Co]:
+#COMPOSITION = np.array([0.5, 0.5], dtype=float)
+
 # For a five-component potential whose element order is
 # [Fe, Ni, Cr, Co, Cu]:
 #COMPOSITION = np.array([0.2, 0.2, 0.2, 0.2, 0.2], dtype=float)
@@ -291,7 +295,7 @@ vfe_table = results["vfe_table"]
 #
 # This table contains the statistics of the unique saddle-point coordination
 # environments used in the analytical VME calculation.
-ts_table = results["ts_table"]
+#ts_table = results["ts_table"]
 
 
 # Generalized planar-fault-energy statistics.
