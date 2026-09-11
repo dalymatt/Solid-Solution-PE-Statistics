@@ -22,9 +22,9 @@ Analytical basis
    Computational Materials Science 214 (2022) 111763.
    https://doi.org/10.1016/j.commatsci.2022.111763
 
-2. A. Baski, R. Jagatramka, A. Shirsalimian, and M. Daly,
-   "An Analytical Method for Quantifying Vacancy Energetics and Vacancy
-   Transport Behavior in Concentrated Solid Solutions."
+2. A. Baski, R. Jagatramka, and M. Daly,
+   "A mechanistic model for vacancy 
+       energetics in concentrated solid solutions with short-range order"
 
 The workflow evaluates statistical energy landscapes using an EAM/alloy
 potential, FCC coordination structure factors, alloy composition, and,
@@ -90,7 +90,7 @@ from energy_workflow import run_energy_calculations
 POTENTIAL_FILE = ROOT / "potentials" / "FeNiCr.eam.alloy"
 
 # Alternative example for an equimolar Fe-Ni-Cr-Co-Cu alloy:
-# POTENTIAL_FILE = ROOT / "potentials" / "FeNiCrCoCu-with-ZBL.eam.alloy" 
+#POTENTIAL_FILE = ROOT / "potentials" / "FeNiCrCoCu-with-ZBL.eam.alloy" 
 
 
 # -----------------------------------------------------------------------------
@@ -110,13 +110,12 @@ POTENTIAL_FILE = ROOT / "potentials" / "FeNiCr.eam.alloy"
 #LATTICE_PARAMETER = 3.5225        # Fe0.33Ni0.33Cr0.34, random alloy
 
 # Additional examples:
-# LATTICE_PARAMETER = 3.51036     # Fe0.73Ni0.08Cr0.19, random alloy
-LATTICE_PARAMETER = 3.50931     # Fe0.73Ni0.08Cr0.19, alpha_ij = +0.05
-#LATTICE_PARAMETER = 3.51500     # Fe0.73Ni0.08Cr0.19, alpha_ij = -0.05
+LATTICE_PARAMETER = 3.51036     # Fe0.73Ni0.08Cr0.19, random alloy
 
-# LATTICE_PARAMETER = 3.53073      # Equimolar NiCrCo
-# LATTICE_PARAMETER = 3.546        # Equimolar NiCrCoCu
-# LATTICE_PARAMETER = 3.54939      # Equimolar FeNiCrCoCu
+
+#LATTICE_PARAMETER = 3.53073      # Equimolar NiCrCo
+#LATTICE_PARAMETER = 3.546        # Equimolar NiCrCoCu
+#LATTICE_PARAMETER = 3.54939      # Equimolar FeNiCrCoCu
 
 
 # -----------------------------------------------------------------------------
@@ -131,7 +130,7 @@ LATTICE_PARAMETER = 3.50931     # Fe0.73Ni0.08Cr0.19, alpha_ij = +0.05
 CUTOFF_RADIUS = 5.6               # FeNiCr potential
 
 # Alternative example:
-# CUTOFF_RADIUS = 5.80375         # FeNiCrCoCu potential
+#CUTOFF_RADIUS = 5.80375         # FeNiCrCoCu potential
 
 
 # -----------------------------------------------------------------------------
@@ -160,9 +159,9 @@ COMPOSITION = np.array([0.73, 0.08, 0.19], dtype=float)
 #
 # For a five-component potential whose element order is
 # [Fe, Ni, Cr, Co, Cu]:
-# COMPOSITION = np.array([0.2, 0.2, 0.2, 0.2, 0.2], dtype=float)
-# COMPOSITION = np.array([0.0, 0.333, 0.333, 0.334, 0.0], dtype=float)
-# COMPOSITION = np.array([0.0, 0.25, 0.25, 0.25, 0.25], dtype=float)
+#COMPOSITION = np.array([0.2, 0.2, 0.2, 0.2, 0.2], dtype=float)
+#COMPOSITION = np.array([0.0, 0.333, 0.333, 0.334, 0.0], dtype=float)
+#COMPOSITION = np.array([0.0, 0.25, 0.25, 0.25, 0.25], dtype=float)
 
 
 # -----------------------------------------------------------------------------
@@ -189,8 +188,8 @@ COMPOSITION = np.array([0.73, 0.08, 0.19], dtype=float)
 #
 # where P_ij^(zeta) is the conditional probability of finding species j
 # around species i in shell zeta, and c_j is the global concentration of j.
-#MODE = "Random"
-MODE = "SRO"
+MODE = "Random"
+#MODE = "SRO"
 
 
 # -----------------------------------------------------------------------------
@@ -207,8 +206,10 @@ MODE = "SRO"
 #
 # This file is used only when MODE = "SRO". It may remain defined while
 # MODE = "Random"; in that case, the workflow ignores it and uses alpha = 0.
-ALPHA_FILE = (ROOT / "data" / "sro" / "alpha_FeNiCr_SS_point05.npy")
-#ALPHA_FILE = (ROOT / "data" / "sro" / "alpha_FeNiCr_SS_minus_point05.npy")
+
+
+ALPHA_FILE = (ROOT / "data" / "sro" / "304SS" / "alpha_Fe73Ni8Cr19_alpha_p0p10.npy")
+#ALPHA_FILE = (ROOT / "data" / "sro" / "Quinary"  / "alpha_Fe20Ni20Cr20Co20Cu20_alpha_P0p15.npy")
 
 
 # =============================================================================

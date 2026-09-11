@@ -5,8 +5,8 @@ statistics in concentrated FCC alloys.
 
 This module orchestrates the equation implementations in ``Potential.py``,
 ``Potential_GPFE.py``, and ``defect_energy_functions.py``. Equation references:
-cohesive/SRO statistics = vacancy-manuscript Eqs. (3)-(12); VFE/VME = Eqs.
-(13)-(21); random-alloy GPFE = CMS-2022 Eqs. (11)-(16).
+cohesive/SRO statistics = vacancy-manuscript Eqs. (1)-(9); VFE/VME = Eqs.
+(10)-(14); random-alloy GPFE = CMS-2022 Eqs. (11)-(16).
 
 Public function
 ---------------
@@ -210,7 +210,7 @@ def _calculate_cohesive_statistics(
     """Calculate FCC cohesive-energy statistics.
 
     Delegates to ``Potential.potential_stats`` (vacancy manuscript
-    Eqs. (3)-(12); random-alloy limit: CMS-2022 Eqs. (3)-(10)).
+    Eqs. (1)-(9); random-alloy limit: CMS-2022 Eqs. (3)-(10)).
     """
 
     import Potential as pot
@@ -229,8 +229,9 @@ def _calculate_cohesive_statistics(
         fcc_coordination,
         alpha,
     )
-
-    table["E"] = table["E"].fillna(0)
+    
+    if not np.all(np.isfinite(table["E"].to_numpy(dtype=float))):
+        raise ValueError("Non-finite cohesive-energy statistics encountered; check variance/covariance inputs.")
 
     return {
         "table": table,
@@ -274,8 +275,8 @@ def _calculate_vfe_vme_statistics(
 ) -> Dict[str, Any]:
     """Calculate VFE/VME statistics from pre-exported environments.
 
-    Mean energies follow vacancy-manuscript Eqs. (13)-(14); standard
-    deviations follow Eqs. (15)-(21).
+    Mean energies follow vacancy-manuscript Eqs. (10)-(11); standard
+    deviations follow Eqs. (12)-(14).
     """
 
     from defect_energy_functions import run_vfe_vme_calculation
@@ -457,9 +458,20 @@ def _calculate_gpfe_statistics(
         ],
         axis=1,
     )
+    
+    # Convert the internal GPFE quantity to the conventional surface-energy
+    # unit.  For FCC {111}, rho_111 = 4/(sqrt(3)*a^2) atoms/A^2 and
+    # 1 eV/A^2 = 16021.76634 mJ/m^2.
+    rho_111 = 4.0 / (np.sqrt(3.0) * lattice_parameter**2)
+    gpfe_conversion = rho_111 * 16021.76634
+    summary_mj_m2 = summary_table * gpfe_conversion
+    
+    
 
     return {
         "summary": summary_table,
+        "summary_mJ_m2": summary_mj_m2,
+        "conversion_eVatom_to_mJm2": gpfe_conversion,
         "results": fault_results,
         "covariances": fault_covariances,
         "coordination": fault_coordination,
@@ -471,6 +483,7 @@ def _calculate_gpfe_statistics(
 
 def _print_gpfe_summary(
     table: pd.DataFrame,
+    table_mj_m2: Optional[pd.DataFrame] = None,
 ) -> None:
     """Print the combined GPFE table."""
 
@@ -479,6 +492,11 @@ def _print_gpfe_summary(
     print("GENERALIZED PLANAR FAULT ENERGY STATISTICS")
     print("=" * 66)
     print(table)
+    if table_mj_m2 is not None:
+        print("-" * 66)
+        print("GENERALIZED PLANAR FAULT ENERGY STATISTICS (mJ/m^2)")
+        print("-" * 66)
+        print(table_mj_m2)
     print("=" * 66)
 
 
@@ -625,11 +643,13 @@ def run_energy_calculations(
         )
 
         _print_gpfe_summary(
-            gpfe["summary"]
+            gpfe["summary"],
+            gpfe["summary_mJ_m2"],
         )
 
         output["gpfe"] = gpfe
         output["gpfe_table"] = gpfe["summary"]
+        output["gpfe_table_mJ_m2"] = gpfe["summary_mJ_m2"]
 
     elif CALCULATE_GPFE and use_alpha:
 

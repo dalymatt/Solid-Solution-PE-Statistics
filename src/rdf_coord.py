@@ -187,10 +187,20 @@ def rdf_coord_fault(a0: object, rc: object, cn_FCC: object, name: object) -> obj
             rdf[:, 1] = (cn_array[0, 1] / cn_array[:, 1]) * (rdf[:, 0] * rdf[:, 0])
             rdf[:, 1] = np.round(rdf[:, 1], 4)
             
-            if np.shape(cn_FCC)[0] == np.shape(cn_array)[0]:
-                if abs(np.sum(cn_array - cn_FCC)) > 1e-5:
-                    cn_f.append(cn_array)
-            else:
+            # Classify an interior layer as FCC-like using a numerical
+            # tolerance, not rounded-distance equality.  The old sum/rounding
+            # test could change a layer from FCC to faulted after a 0.001 A
+            # change in lattice parameter and severely distort GPFE spreads.
+            is_fcc = (
+                np.shape(cn_FCC) == np.shape(cn_array)
+                and np.allclose(
+                    cn_array,
+                    cn_FCC,
+                    rtol=1e-4,
+                    atol=1e-3,
+                )
+            )
+            if not is_fcc:
                 cn_f.append(cn_array)
                 
     return rdf_f,cn_f

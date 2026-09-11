@@ -248,8 +248,9 @@ def calculate_vfe_statistics(
             cn_local,
             alpha,
         )
-
-        coh_site["E"] = coh_site["E"].fillna(0)
+        
+        if not np.all(np.isfinite(coh_site["E"].to_numpy(dtype=float))):
+            raise ValueError("Non-finite defect-site energy statistics encountered; check variance/covariance inputs.")
 
         fcc_mean = float(coh_fcc["E"].iloc[0])
         fcc_std = float(coh_fcc["E"].iloc[1])
@@ -384,8 +385,9 @@ def calculate_ts_vme_statistics(
             cn_local,
             alpha,
         )
-
-        coh_site["E"] = coh_site["E"].fillna(0)
+        
+        if not np.all(np.isfinite(coh_site["E"].to_numpy(dtype=float))):
+            raise ValueError("Non-finite defect-site energy statistics encountered; check variance/covariance inputs.")
 
         fcc_mean = float(coh_fcc["E"].iloc[0])
         fcc_std = float(coh_fcc["E"].iloc[1])
