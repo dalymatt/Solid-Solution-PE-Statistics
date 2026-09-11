@@ -127,7 +127,7 @@ Mean  375.442787   17.713483  384.299567   17.713478  384.299517   17.713483
 Std   187.842268  164.387701  187.392144  164.973490  186.744363  164.387701
 ```
 
-Two further cohesive-energy checks from the 2022 paper: Ni40Co60 (`NiCo-lammps-2014.alloy`, a = 3.512 Å, cutoff 6.5 Å) and Fe33Ni33Cr34 (`FeNiCr.eam.alloy`, a = 3.5225 Å, cutoff 5.6 Å).
+Two further cohesive-energy checks from the 2022 paper: Top - Ni40Co60 (`NiCo-lammps-2014.alloy`, a = 3.512 Å, cutoff 6.5 Å) and Bottom - Fe33Ni33Cr34 (`FeNiCr.eam.alloy`, a = 3.5225 Å, cutoff 5.6 Å).
 
 <p align="center">
   <img src="Images/stats.png" alt="Ni40Co60 cohesive-energy statistics" width="500">
