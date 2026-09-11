@@ -197,6 +197,6 @@ papers/                      the 2022 paper
 
 ## Authors
 
-Akash Baski, Ritesh Jagatramka, Chu Wang (now at Nissan), Ariana Sofia Del Valle, Amir Shirsalimian, and Matthew Daly. Advanced Materials and Microstructures Laboratory, University of Illinois Chicago. Corresponding author: mattdaly@uic.edu.
+Akash Baski, Ritesh Jagatramka, Chu Wang, Ariana Sofia Del Valle, Amir Shirsalimian, and Matthew Daly. Advanced Materials and Microstructures Laboratory, University of Illinois Chicago. Corresponding author: mattdaly@uic.edu.
 
 This work was supported by the National Science Foundation under Grant No. DMR-2144451.
