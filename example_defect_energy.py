@@ -295,7 +295,7 @@ vfe_table = results["vfe_table"]
 #
 # This table contains the statistics of the unique saddle-point coordination
 # environments used in the analytical VME calculation.
-#ts_table = results["ts_table"]
+ts_table = results["ts_table"]
 
 
 # Generalized planar-fault-energy statistics.
