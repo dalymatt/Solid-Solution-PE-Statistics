@@ -267,7 +267,7 @@ def _calculate_vfe_vme_statistics(
     potential_file: PathLike,
     lattice_parameter: float,
     composition: np.ndarray,
-    fcc_coordination_file: PathLike,
+    fcc_coordination: np.ndarray,
     vacancy_environment_file: PathLike,
     transition_state_environment_file: PathLike,
     use_alpha: bool,
@@ -281,8 +281,7 @@ def _calculate_vfe_vme_statistics(
 
     from defect_energy_functions import run_vfe_vme_calculation
 
-    required_files = (
-        Path(fcc_coordination_file),
+    required_files = (        
         Path(vacancy_environment_file),
         Path(transition_state_environment_file),
     )
@@ -298,7 +297,7 @@ def _calculate_vfe_vme_statistics(
         potential_file=potential_file,
         lattice_parameter=lattice_parameter,
         composition=composition,
-        fcc_coordination_file=fcc_coordination_file,
+        fcc_coordination=fcc_coordination,
         vacancy_environment_file=vacancy_environment_file,
         transition_state_environment_file=(
             transition_state_environment_file
@@ -519,8 +518,7 @@ def run_energy_calculations(
     Run all enabled energy calculations.
 
     Standard paths are determined automatically from ROOT:
-
-    data/coordination/cn_FCC.pkl
+    
     data/coordination/cn_vac.pkl
     data/coordination/cn_TS.pkl
 
@@ -548,16 +546,16 @@ def run_energy_calculations(
         lattice_parameter=lattice_parameter,
         cutoff_radius=cutoff_radius,
     )
+    # Dimensionless copy for the defect path; run_vfe_vme_calculation
+    # multiplies the first column by the lattice parameter.
+    fcc_coordination_normalized = fcc_coordination.copy()
+    fcc_coordination_normalized[:, 0] /= lattice_parameter
 
     alpha = _load_alpha(
         use_alpha=use_alpha,
         alpha_file=active_alpha_file,
         fcc_coordination=fcc_coordination,
         composition=composition_array,
-    )
-
-    vfe_vme_fcc_coordination_file = (
-        root_path / "data" / "coordination" / "cn_FCC.pkl"
     )
 
     vacancy_environment_file = (
@@ -605,9 +603,7 @@ def run_energy_calculations(
             potential_file=potential_file,
             lattice_parameter=lattice_parameter,
             composition=composition_array,
-            fcc_coordination_file=(
-                vfe_vme_fcc_coordination_file
-            ),
+            fcc_coordination=fcc_coordination_normalized,
             vacancy_environment_file=(
                 vacancy_environment_file
             ),

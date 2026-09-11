@@ -166,17 +166,7 @@ def potential_stats(rrange, rhorange, rho, Fr, Pp, comp, cn, alpha):
         raise ValueError(
             "Warren-Cowley parameters violate conditional-probability "
             f"normalization; max |sum_Y P(Y|X)-1| = {max_norm_err:.3e}."
-        )
-    if max_norm_err > 1e-6:
-        import warnings
-        warnings.warn(
-            "Warren-Cowley parameters have a finite normalization residual: "
-            f"max |sum_Y P(Y|X)-1| = {max_norm_err:.3e}. "
-            "For publication-quality calculations, regenerate/close the alpha "
-            "matrix so sum_Y c_Y alpha_XY = 0.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
+        )    
         
     # Map shell-level alpha to every coordination peak.  The first peak in
     # the shipped FCC/vacancy/TS environments is a first-neighbour peak, so

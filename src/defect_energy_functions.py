@@ -26,8 +26,6 @@ import numpy as np
 import pandas as pd
 
 import Potential as pot_defect
-import Potential_GPFE as pot_gpfe
-import rdf_coord as rc
 
 
 PathLike = Union[str, Path]
@@ -37,48 +35,6 @@ def load_pickle(filename: PathLike) -> Any:
     """Load and return an object stored in a pickle file."""
     with open(filename, "rb") as file_handle:
         return pickle.load(file_handle)
-
-
-def load_fcc_coordination(fcc_coordination_file: PathLike) -> np.ndarray:
-    """
-    Load the normalized perfect-FCC coordination/structure-factor array.
-
-    The first column must already be dimensionless. It will later be
-    multiplied by the requested lattice parameter.
-
-    Parameters
-    ----------
-    fcc_coordination_file
-        Pickle file containing ``cn_FCC``.
-
-    Returns
-    -------
-    numpy.ndarray
-        FCC coordination array.
-    """
-    cn_fcc = np.asarray(
-        load_pickle(fcc_coordination_file),
-        dtype=float,
-    )
-
-    if cn_fcc.ndim != 2:
-        raise ValueError(
-            "The FCC coordination array must be two-dimensional. "
-            f"Received shape {cn_fcc.shape}."
-        )
-
-    if cn_fcc.shape[1] < 2:
-        raise ValueError(
-            "The FCC coordination array must contain at least two columns."
-        )
-
-    if not np.all(np.isfinite(cn_fcc)):
-        raise ValueError(
-            "The FCC coordination array contains NaN or infinite values."
-        )
-
-    return cn_fcc
-
 
 def load_alpha_parameters(
     alpha_file: PathLike | None,
@@ -471,7 +427,7 @@ def run_vfe_vme_calculation(
     potential_file: PathLike,
     lattice_parameter: float,
     composition: Sequence[float],
-    fcc_coordination_file: PathLike,
+    fcc_coordination: np.ndarray,
     vacancy_environment_file: PathLike,
     transition_state_environment_file: PathLike,
     use_alpha: bool = False,
@@ -510,9 +466,9 @@ def run_vfe_vme_calculation(
             f"Current sum = {composition_array.sum():.10f}"
         )
 
-    cn_fcc = load_fcc_coordination(
-        fcc_coordination_file
-    )
+    cn_fcc = np.asarray(fcc_coordination, dtype=float)
+    if cn_fcc.ndim != 2 or cn_fcc.shape[1] < 2 or not np.all(np.isfinite(cn_fcc)):
+        raise ValueError("fcc_coordination must be a finite (n_shells, 2) array.")
 
     alpha = load_alpha_parameters(
         alpha_file=alpha_file,
@@ -669,257 +625,3 @@ def print_summary(
     )
 
     print("=" * 52)
-
-# =========================================================
-# RANDOM-ALLOY GPFE FUNCTIONS
-# =========================================================
-
-GPFE_FAULT_TYPES = (
-    "USF",
-    "ISF",
-    "UTF1",
-    "ESF",
-    "UTF2",
-    "TF",
-)
-
-
-def calculate_random_gpfe(
-    *,
-    potential_file: PathLike,
-    lattice_parameter: float,
-    cutoff_radius: float,
-    composition: Sequence[float],
-    fcc_coordination_file: PathLike,
-    fault_types: Sequence[str] = GPFE_FAULT_TYPES,
-) -> Dict[str, Any]:
-    """
-    Calculate the random-alloy generalized planar fault energies.
-
-    Notes
-    -----
-    This function intentionally does not accept Warren-Cowley parameters.
-    It uses the original random-alloy ``Potential_GPFE.py`` implementation.
-
-    The normalized FCC coordination array is loaded from ``cn_FCC.pkl``.
-    Faulted coordination arrays are generated using
-    ``rdf_coord.rdf_coord_fault``.
-    """
-    composition_array = np.asarray(composition, dtype=float)
-
-    if composition_array.ndim != 1:
-        raise ValueError("Composition must be one-dimensional.")
-
-    if np.any(composition_array < 0):
-        raise ValueError("Composition fractions cannot be negative.")
-
-    if not np.isclose(composition_array.sum(), 1.0, atol=1.0e-6):
-        raise ValueError(
-            "Composition fractions must sum to 1. "
-            f"Current sum = {composition_array.sum():.10f}"
-        )
-
-    cn_fcc_normalized = load_fcc_coordination(
-        fcc_coordination_file
-    )
-
-    # Convert normalized shell distances to angstrom for the GPFE routines.
-    cn_fcc = copy.deepcopy(cn_fcc_normalized)
-    cn_fcc[:, 0] *= lattice_parameter
-
-    rrange, rhorange, rho, Fr, Pp = (
-        pot_gpfe.potential_read(str(potential_file))
-    )
-
-    form_E_fcc, covar_fcc, E_element_fcc = (
-        pot_gpfe.potential_stats(
-            rrange,
-            rhorange,
-            rho,
-            Fr,
-            Pp,
-            composition_array,
-            cn_fcc,
-        )
-    )
-
-    fault_results: Dict[str, pd.DataFrame] = {}
-    fault_covariances: Dict[str, float] = {}
-    fault_coordination: Dict[str, Any] = {}
-
-    valid_fault_types = set(GPFE_FAULT_TYPES)
-
-    for fault_type in fault_types:
-        if fault_type not in valid_fault_types:
-            raise ValueError(
-                f"Unknown GPFE fault type '{fault_type}'. "
-                f"Choose from {GPFE_FAULT_TYPES}."
-            )
-
-        _, cn_fault = rc.rdf_coord_fault(
-            lattice_parameter,
-            cutoff_radius,
-            cn_fcc,
-            fault_type,
-        )
-
-        form_E_fault, covar_fault = (
-            pot_gpfe.potential_stats_fault(
-                rrange,
-                rhorange,
-                rho,
-                Fr,
-                Pp,
-                composition_array,
-                cn_fcc,
-                cn_fault,
-                form_E_fcc,
-                E_element_fcc,
-                fault_type,
-            )
-        )
-
-        fault_results[fault_type] = form_E_fault
-        fault_covariances[fault_type] = float(covar_fault)
-        fault_coordination[fault_type] = cn_fault
-
-    summary_rows = []
-
-    for fault_type in fault_types:
-        table = fault_results[fault_type]
-        column_name = f"E_{fault_type}"
-
-        summary_rows.append(
-            {
-                "Fault": fault_type,
-                "Mean (eV/atom)": float(
-                    table.loc["Mean", column_name]
-                ),
-                "Std (eV/atom)": float(
-                    table.loc["Std", column_name]
-                ),
-            }
-        )
-
-    summary_table = pd.DataFrame(summary_rows)
-
-    return {
-        "FCC_statistics_GPFE": form_E_fcc,
-        "FCC_covariance_GPFE": float(covar_fcc),
-        "FCC_element_energies_GPFE": E_element_fcc,
-        "GPFE_results": fault_results,
-        "GPFE_covariances": fault_covariances,
-        "GPFE_summary": summary_table,
-        "GPFE_fault_coordination": fault_coordination,
-        "cn_FCC_GPFE": cn_fcc,
-    }
-
-
-def print_gpfe_summary(results, precision=8):
-    """
-    Print GPFE results in a compact table.
-    """
-
-    gpfe = results["GPFE_results"]
-
-    top = ["USF", "UTF1", "UTF2"]
-    bottom = ["ISF", "ESF", "TF"]
-
-    print()
-    print("=" * 74)
-    print("GENERALIZED PLANAR FAULT ENERGIES (eV/atom)")
-    print("=" * 74)
-
-    # ---------- first row ----------
-    print(
-        f"{'':8}"
-        + "".join(f"{('E_'+x):>16}" for x in top)
-    )
-
-    print(
-        f"{'Mean':<8}"
-        + "".join(
-            f"{gpfe[x].loc['Mean', 'E_'+x]:>16.{precision}f}"
-            for x in top
-        )
-    )
-
-    print(
-        f"{'Std':<8}"
-        + "".join(
-            f"{gpfe[x].loc['Std', 'E_'+x]:>16.{precision}f}"
-            for x in top
-        )
-    )
-
-    print()
-
-    # ---------- second row ----------
-    print(
-        f"{'':8}"
-        + "".join(f"{('E_'+x):>16}" for x in bottom)
-    )
-
-    print(
-        f"{'Mean':<8}"
-        + "".join(
-            f"{gpfe[x].loc['Mean', 'E_'+x]:>16.{precision}f}"
-            for x in bottom
-        )
-    )
-
-    print(
-        f"{'Std':<8}"
-        + "".join(
-            f"{gpfe[x].loc['Std', 'E_'+x]:>16.{precision}f}"
-            for x in bottom
-        )
-    )
-
-    print("=" * 74)
-
-
-def print_summary(
-    results: Dict[str, Any],
-    precision: int = 8,
-) -> None:
-    """
-    Print only VFE, TS, and VME statistics.
-    """
-
-    print("=" * 60)
-    print("DEFECT ENERGY SUMMARY")
-    print("=" * 60)
-
-    print(
-        f"VFE average                 = "
-        f"{results['E_VFE']:.{precision}f} eV"
-    )
-    print(
-        f"VFE stdev                   = "
-        f"{results['Sig_VFE']:.{precision}f} eV"
-    )
-
-    print("-" * 60)
-
-    print(
-        f"TS excess energy average    = "
-        f"{results['E_TS']:.{precision}f} eV"
-    )
-    print(
-        f"TS excess energy stdev      = "
-        f"{results['Sig_TS']:.{precision}f} eV"
-    )
-
-    print("-" * 60)
-
-    print(
-        f"VME average                 = "
-        f"{results['E_VME']:.{precision}f} eV"
-    )
-    print(
-        f"VME stdev                   = "
-        f"{results['Sig_VME']:.{precision}f} eV"
-    )
-
-    print("=" * 60)
