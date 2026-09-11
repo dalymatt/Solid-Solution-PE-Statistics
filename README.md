@@ -289,7 +289,7 @@ Input parameters
 
 
 
-* Lattice parameter: `3.5150 Å`
+* Lattice parameter: `3.51036 Å`
 * Crystal structure: `FCC`
 * Composition: `73 at.% Fe, 8 at.% Ni, 19 at.% Cr`
 * Warren–Cowley parameter file: `alpha\_FeNiCr\_SS\_minus\_point05.npy`

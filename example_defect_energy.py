@@ -188,8 +188,8 @@ COMPOSITION = np.array([0.73, 0.08, 0.19], dtype=float)
 #
 # where P_ij^(zeta) is the conditional probability of finding species j
 # around species i in shell zeta, and c_j is the global concentration of j.
-MODE = "Random"
-#MODE = "SRO"
+#MODE = "Random"
+MODE = "SRO"
 
 
 # -----------------------------------------------------------------------------
@@ -208,7 +208,7 @@ MODE = "Random"
 # MODE = "Random"; in that case, the workflow ignores it and uses alpha = 0.
 
 
-ALPHA_FILE = (ROOT / "data" / "sro" / "304SS" / "alpha_Fe73Ni8Cr19_alpha_p0p10.npy")
+ALPHA_FILE = (ROOT / "data" / "sro" / "304SS" / "alpha_Fe73Ni8Cr19_alpha_p0p05.npy")
 #ALPHA_FILE = (ROOT / "data" / "sro" / "Quinary"  / "alpha_Fe20Ni20Cr20Co20Cu20_alpha_P0p15.npy")
 
 
