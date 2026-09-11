@@ -83,7 +83,7 @@ Use these to confirm an installation. Lattice parameters are those used in the p
 | Fe20Ni20Cr20Co20Cu20 | 3.54939 | Random | 1.426 ± 0.225 | 1.041 ± 0.257 |
 | Fe73Ni8Cr19 | 3.51036 | SRO, `alpha_p0p05` | 2.019 ± 0.032 | 0.944 ± 0.057 |
 
-Full output of the shipped example (`MODE = "SRO"`):
+Full output of the shipped example (Fe73Ni8Cr19, `MODE = "SRO"`):
 
 ```text
 FCC COHESIVE-ENERGY STATISTICS: SRO SYSTEM
@@ -169,7 +169,7 @@ Two reference calculations from the 2022 paper, in eV/atom:
   <img src="Images/frnicrfaultedstate.PNG" alt="Fe33Ni33Cr34 GPFE statistics" width="450">
 </p>
 
-Left: Ni40Co60, a = 3.512 Å, cutoff 6.5 Å. Right: Fe33Ni33Cr34, a = 3.5225 Å, cutoff 5.6 Å.
+Top: Ni40Co60, a = 3.512 Å, cutoff 6.5 Å. Bottom: Fe33Ni33Cr34, a = 3.5225 Å, cutoff 5.6 Å.
 
 GPFE statistics for SRO alloys are not implemented; `MODE = "SRO"` skips this block.
 
