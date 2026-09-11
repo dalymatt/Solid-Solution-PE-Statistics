@@ -93,6 +93,9 @@ POTENTIAL_FILE = ROOT / "potentials" / "FeNiCr.eam.alloy"
 # Alternative example for an equimolar Fe-Ni-Cr-Co-Cu alloy:
 #POTENTIAL_FILE = ROOT / "potentials" / "FeNiCrCoCu-with-ZBL.eam.alloy" 
 
+# Alternative example for an equimolar Ni-Co alloy:
+#POTENTIAL_FILE = ROOT / "potentials" / "NiCo-lammps-2014.alloy" 
+
 
 # -----------------------------------------------------------------------------
 # FCC LATTICE PARAMETER
@@ -160,7 +163,7 @@ COMPOSITION = np.array([0.73, 0.08, 0.19], dtype=float)
 #
 # For a two-component potential whose element order is
 # [Ni, Co]:
-#COMPOSITION = np.array([0.5, 0.5], dtype=float)
+#COMPOSITION = np.array([0.4, 0.6], dtype=float)
 
 # For a five-component potential whose element order is
 # [Fe, Ni, Cr, Co, Cu]:
